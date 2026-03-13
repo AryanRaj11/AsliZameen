@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -47,6 +47,7 @@ export default function AddListingPage() {
   
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isSubmitted, setIsSubmitted] = useState(false)
+  const [previews, setPreviews] = useState<string[]>([]);
   
   const [formData, setFormData] = useState({
     title: '',
@@ -61,6 +62,43 @@ export default function AddListingPage() {
     zipCode: '',
     features: [] as string[],
   })
+
+  const fileInputRef = useRef(null);
+  const MAX_FILES = 10;
+
+  const handleFileChange = (event: React.ChangeEvent<HTMLInputElement>) => { 
+
+    if (event.target.files) {
+      const selectedFiles = Array.from(event.target.files);
+      
+      // 1. Calculate how many more files we can accept
+      const availableSlots = MAX_FILES - previews.length;
+  
+      if (availableSlots <= 0) {
+        alert(`You can only upload a maximum of ${MAX_FILES} images.`);
+        return;
+      }
+  
+      // 2. Only take the files that fit in the remaining slots
+      const allowedFiles = selectedFiles.slice(0, availableSlots);
+  
+      // 3. Create URLs for the allowed files
+      const newUrls = allowedFiles.map((file) => URL.createObjectURL(file));
+  
+      // 4. Update the state
+      setPreviews((prev) => [...prev, ...newUrls]);
+  
+      // Optional: Warn the user if some files were ignored
+      if (selectedFiles.length > availableSlots) {
+        alert(`Only the first ${availableSlots} files were added. Max limit is ${MAX_FILES}.`);
+      }
+    }
+  };
+
+  const handleClick = () => {
+    // Manually trigger the hidden file input
+    (fileInputRef.current as any)?.click();
+  };
 
   const canSell = user?.role === 'seller' || user?.role === 'both'
 
@@ -77,6 +115,9 @@ export default function AddListingPage() {
   }
 
   const handleFeatureToggle = (feature: string) => {
+
+  
+    
     setFormData(prev => ({
       ...prev,
       features: prev.features.includes(feature)
@@ -227,12 +268,12 @@ export default function AddListingPage() {
             <CardContent>
               <FieldGroup>
                 <Field>
-                  <FieldLabel>Price ($)</FieldLabel>
+                  <FieldLabel>Price (INR)</FieldLabel>
                   <Input
                     type="number"
                     required
                     min="0"
-                    placeholder="450000"
+                    placeholder="₹"
                     value={formData.price}
                     onChange={(e) => setFormData({ ...formData, price: e.target.value })}
                   />
@@ -244,7 +285,7 @@ export default function AddListingPage() {
                       type="number"
                       required
                       min="0"
-                      step="0.1"
+                      step="1"
                       placeholder="50"
                       value={formData.size}
                       onChange={(e) => setFormData({ ...formData, size: e.target.value })}
@@ -349,19 +390,39 @@ export default function AddListingPage() {
           <Card className="lg:col-span-2">
             <CardHeader>
               <CardTitle>Images</CardTitle>
-              <CardDescription>Upload photos of your property (demo uses placeholder images)</CardDescription>
+              <CardDescription>Upload photos of your property</CardDescription>
             </CardHeader>
             <CardContent>
               <div className="flex flex-col items-center rounded-lg border-2 border-dashed border-border py-12">
                 <Upload className="h-10 w-10 text-muted-foreground" />
-                <p className="mt-2 text-sm font-medium">Drag and drop images here</p>
-                <p className="text-xs text-muted-foreground">or click to browse</p>
-                <Button variant="outline" className="mt-4" type="button">
+                <p className="text-xs text-muted-foreground">Click to browse</p>
+                <Input
+                required
+        type="file"
+        multiple={true}
+        ref={fileInputRef}
+        onChange={handleFileChange}
+        accept="image/*"
+        style={{ display: 'none' }}
+      />
+                <Button variant="outline" className="mt-4" type="button" onClick={handleClick}>
                   Choose Files
                 </Button>
-                <p className="mt-2 text-xs text-muted-foreground">
-                  Demo note: Placeholder images will be used
-                </p>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '10px', marginTop: '20px' }}>
+                {previews.map((url, index) => (
+          <img 
+            key={index} 
+            src={url} 
+            alt={`Preview ${index}`} 
+            style={{ width: '100px', height: '100px', objectFit: 'cover', borderRadius: '5px' }} 
+          />
+        ))}
+        </div>
+                {previews.length > 0 && (
+        <button onClick={() => setPreviews([])} style={{ marginTop: '10px', color: 'red' }}>
+          Clear All
+        </button>
+      )}
               </div>
             </CardContent>
           </Card>
