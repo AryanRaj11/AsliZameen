@@ -1,0 +1,42 @@
+name: Apply Supabase SQL migrations
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+    paths:
+      - "supabase/sql/**"
+
+jobs:
+  apply-sql:
+    runs-on: ubuntu-latest
+
+    env:
+      SUPABASE_DB_URL: ${{ secrets.SUPABASE_DB_URL }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Verify Supabase DB URL is set
+        run: |
+          if [ -z "$SUPABASE_DB_URL" ]; then
+            echo "SUPABASE_DB_URL is not set. Please add it as a GitHub secret."
+            exit 1
+          fi
+
+      - name: Install PostgreSQL client
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y postgresql-client
+
+      - name: Apply SQL files to Supabase
+        run: |
+          set -e
+          echo "Applying SQL files in supabase/sql to Supabase database..."
+
+          for file in $(ls supabase/sql/*.sql | sort); do
+            echo "Running $file"
+            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$file"
+          done
