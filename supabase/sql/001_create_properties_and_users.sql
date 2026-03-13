@@ -1,37 +1,45 @@
--- Create users table (optional but recommended for seller_id FK)
-create table if not exists public.users (
-  id         uuid primary key default gen_random_uuid(),
-  name       text        not null,
-  email      text        not null unique,
-  phone      text,
-  role       text        not null check (role in ('buyer','seller','both')),
-  favorites  text[]      not null default '{}',
-  created_at timestamptz not null default now()
+-- 1. Enable the extension for UUID generation (required for gen_random_uuid())
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- 2. Create users table
+CREATE TABLE IF NOT EXISTS public.users (
+    id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    name        text        NOT NULL,
+    email       text        NOT NULL UNIQUE,
+    phone       text,
+    role        text        NOT NULL CHECK (role IN ('buyer', 'seller', 'both')),
+    favorites   uuid[]      NOT NULL DEFAULT '{}', -- Use uuid[] to reference property IDs
+    created_at  timestamptz NOT NULL DEFAULT now()
 );
 
--- Create properties table
-create table if not exists public.properties (
-  id          uuid primary key default gen_random_uuid(),
-  title       text        not null,
-  description text        not null,
-  price       numeric     not null,
-  size        numeric     not null,
-  size_unit   text        not null check (size_unit in ('acres','hectares','sqft')),
-  land_type   text        not null check (land_type in ('agricultural','residential','commercial')),
-  address     text        not null,
-  city        text        not null,
-  state       text        not null,
-  zip_code    text        not null,
-  features    text[]      not null default '{}',
-  images      text[]      not null default '{}',
-  seller_id   uuid        not null,
-  created_at  timestamptz not null default now(),
-  status      text        not null default 'active'
-    check (status in ('active','pending','sold'))
+-- 3. Create properties table
+CREATE TABLE IF NOT EXISTS public.properties (
+    id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+    title       text        NOT NULL,
+    description text        NOT NULL,
+    price       numeric     NOT NULL,
+    size        numeric     NOT NULL,
+    size_unit   text        NOT NULL CHECK (size_unit IN ('acres', 'hectares', 'sqft')),
+    land_type   text        NOT NULL CHECK (land_type IN ('agricultural', 'residential', 'commercial')),
+    address     text        NOT NULL,
+    city        text        NOT NULL,
+    state       text        NOT NULL,
+    zip_code    text        NOT NULL,
+    features    text[]      NOT NULL DEFAULT '{}',
+    images      text[]      NOT NULL DEFAULT '{}',
+    seller_id   uuid        NOT NULL,
+    created_at  timestamptz NOT NULL DEFAULT now(),
+    status      text        NOT NULL DEFAULT 'active' 
+        CHECK (status IN ('active', 'pending', 'sold')),
+
+    -- Define the Foreign Key constraint inside the table creation
+    -- This avoids the "ADD CONSTRAINT IF NOT EXISTS" syntax error
+    CONSTRAINT properties_seller_id_fkey 
+        FOREIGN KEY (seller_id) 
+        REFERENCES public.users(id) 
+        ON DELETE CASCADE
 );
 
--- Add FK from properties.seller_id to users.id
-alter table public.properties
-  add constraint if not exists properties_seller_id_fkey
-  foreign key (seller_id) references public.users(id);
-
+-- 4. Create indexes for performance (Recommended)
+CREATE INDEX IF NOT EXISTS idx_properties_seller_id ON public.properties(seller_id);
+CREATE INDEX IF NOT EXISTS idx_properties_status ON public.properties(status);
