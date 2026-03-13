@@ -31,6 +31,40 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y postgresql-client
 
+      - name: Force IPv4 connection (work around IPv6 runner networking)
+        run: |
+          set -e
+
+          python - <<'PY'
+          import os, sys
+          from urllib.parse import urlparse
+
+          u = os.environ.get("SUPABASE_DB_URL", "")
+          if not u:
+            print("SUPABASE_DB_URL missing", file=sys.stderr)
+            sys.exit(1)
+
+          p = urlparse(u)
+          if not p.hostname:
+            print("Could not parse hostname from SUPABASE_DB_URL", file=sys.stderr)
+            sys.exit(1)
+
+          with open(os.environ["GITHUB_ENV"], "a") as f:
+            f.write(f"DB_HOST={p.hostname}\n")
+            f.write(f"DB_PORT={p.port or 5432}\n")
+            f.write(f"DB_NAME={(p.path or '/').lstrip('/')}\n")
+            f.write(f"DB_USER={(p.username or '')}\n")
+            f.write(f"DB_PASS={(p.password or '')}\n")
+          PY
+
+          DB_HOSTADDR="$(getent ahostsv4 "$DB_HOST" | awk '{print $1; exit}')"
+          if [ -z "$DB_HOSTADDR" ]; then
+            echo "Could not resolve IPv4 address for $DB_HOST"
+            exit 1
+          fi
+
+          echo "DB_HOSTADDR=$DB_HOSTADDR" >> "$GITHUB_ENV"
+
       - name: Apply SQL files to Supabase
         run: |
           set -e
@@ -38,7 +72,10 @@ jobs:
 
           for file in $(ls supabase/sql/*.sql | sort); do
             echo "Running $file"
-            psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$file"
+            PGPASSWORD="$DB_PASS" \
+              psql "host=$DB_HOST hostaddr=$DB_HOSTADDR port=$DB_PORT dbname=$DB_NAME user=$DB_USER sslmode=require" \
+              -v ON_ERROR_STOP=1 \
+              -f "$file"
           done
 name: Apply Supabase SQL migrations
 
