@@ -18,7 +18,7 @@ interface ContactFormProps {
 export function ContactForm({ property }: ContactFormProps) {
   const { user } = useAuth()
   const seller = getUserById(property.sellerId)
-  
+
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -50,8 +50,8 @@ export function ContactForm({ property }: ContactFormProps) {
           <p className="mt-2 text-sm text-muted-foreground">
             The seller will be in touch with you soon.
           </p>
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             className="mt-4"
             onClick={() => setIsSubmitted(false)}
           >
@@ -95,57 +95,21 @@ export function ContactForm({ property }: ContactFormProps) {
         )}
 
         <form onSubmit={handleSubmit}>
-          <FieldGroup>
-            <Field>
-              <FieldLabel>Your Name</FieldLabel>
-              <Input
-                required
-                value={formData.name}
-                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                placeholder="John Doe"
-              />
-            </Field>
-            <Field>
-              <FieldLabel>Email Address</FieldLabel>
-              <Input
-                type="email"
-                required
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                placeholder="john@example.com"
-              />
-            </Field>
-            <Field>
-              <FieldLabel>Phone Number (Optional)</FieldLabel>
-              <Input
-                type="tel"
-                value={formData.phone}
-                onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                placeholder="(555) 123-4567"
-              />
-            </Field>
-            <Field>
-              <FieldLabel>Message</FieldLabel>
-              <Textarea
-                required
-                rows={4}
-                value={formData.message}
-                onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                placeholder="I'm interested in this property..."
-              />
-            </Field>
-          </FieldGroup>
 
-          <Button type="submit" className="mt-4 w-full" disabled={isSubmitting}>
-            {isSubmitting ? (
-              'Sending...'
-            ) : (
-              <>
-                <Send className="mr-2 h-4 w-4" />
-                Send Message
-              </>
-            )}
-          </Button>
+
+          <a href="https://wa.me/15551234567?text=Hello" target="_blank">
+
+            <Button type="button" className="mt-4 w-full" disabled={isSubmitting}>
+              {isSubmitting ? (
+                'Sending...'
+              ) : (
+                <>
+                  <Send className="mr-2 h-4 w-4" />
+                  Send WhatsApp Message
+                </>
+              )}
+            </Button>
+          </a>
         </form>
       </CardContent>
     </Card>

@@ -35,7 +35,7 @@ export function Footer() {
               <span className="text-xl font-bold">AsliZameen</span>
             </Link>
             <p className="mt-4 max-w-xs text-sm text-muted-foreground">
-              Your trusted marketplace for buying and selling land. Find your perfect plot or list your property with ease.
+              Your trusted marketplace for buying and selling land.Sp Find your perfect plot or list your property with ease.
             </p>
           </div>
 
