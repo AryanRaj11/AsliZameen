@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { SearchForm } from '@/components/forms/search-form'
 import { PropertyGrid } from '@/components/property/property-grid'
-import { getFeaturedProperties } from '@/lib/data/properties'
+import { fetchFeaturedProperties } from '@/lib/data/properties'
 import { LAND_TYPE_LABELS, LAND_TYPE_DESCRIPTIONS, LandType } from '@/lib/types'
 import { ArrowRight, Tractor, Home, Building2, Search, FileText, Handshake } from 'lucide-react'
 
@@ -32,8 +32,8 @@ const howItWorks = [
   },
 ]
 
-export default function HomePage() {
-  const featuredProperties = getFeaturedProperties(6)
+export default async function HomePage() {
+  const featuredProperties = await fetchFeaturedProperties(6)
 
   return (
     <div className="flex flex-col">

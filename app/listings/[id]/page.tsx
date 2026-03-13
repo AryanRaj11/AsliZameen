@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PropertyGallery } from '@/components/property/property-gallery'
 import { PropertyGrid } from '@/components/property/property-grid'
 import { ContactForm } from '@/components/forms/contact-form'
-import { getPropertyById, properties } from '@/lib/data/properties'
+import { fetchAllProperties, fetchPropertyById } from '@/lib/data/properties'
 import { LAND_TYPE_LABELS } from '@/lib/types'
 import { ArrowLeft, MapPin, Ruler, Calendar, Check, Share2 } from 'lucide-react'
 import { FavoriteButton } from './favorite-button'
@@ -17,7 +17,8 @@ interface PropertyDetailPageProps {
 
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
   const { id } = await params
-  const property = getPropertyById(id)
+  const property = await fetchPropertyById(id)
+  const allProperties = await fetchAllProperties()
 
   if (!property) {
     notFound()
@@ -46,7 +47,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   }
 
   // Get related properties (same type, excluding current)
-  const relatedProperties = properties
+  const relatedProperties = allProperties
     .filter(p => p.landType === property.landType && p.id !== property.id && p.status === 'active')
     .slice(0, 3)
 

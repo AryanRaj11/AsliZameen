@@ -1,0 +1,61 @@
+[00:00:00.513] Server  LOG     ✓ Ready in 369ms
+[00:00:00.984] Browser INFO    %cDownload the React DevTools for a better development experience: https://react.dev/link/react-devtools font-weight:bold
+[00:00:01.149] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:01.149] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:00:01.149] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773332536556} /_vercel/insights/view
+[00:00:09.311] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:00:09.311] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:00:09.311] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","r":"","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773332544368} /_vercel/insights/view
+[00:00:15.629] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings/1 color: rgb(120, 120, 120) color: inherit {"dp":"/listings/[id]","o":"http://localhost:3000/listings/1","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773332551034} /_vercel/insights/view
+[00:00:52.297] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773332587705} /_vercel/insights/view
+[00:00:55.671] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773332591071} /_vercel/insights/view
+[00:04:32.769] Server  LOG     ✓ Compiled in 257ms
+[00:04:33.845] Browser ERROR   React instrumentation encountered an error: %o {}
+[00:04:35.736] Server  LOG     ✓ Compiled in 0ms
+[00:04:37.845] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:04:37.845] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:04:37.845] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773332811466} /_vercel/insights/view
+[00:04:37.845] Browser WARN    Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading
+[00:04:37.846] Browser WARN    As of March 1st, 2025, google.maps.places.Autocomplete is not available to new customers. Please use google.maps.places.PlaceAutocompleteElement instead. At this time, google.maps.places.Autocomplete is not scheduled to be discontinued, but google.maps.places.PlaceAutocompleteElement is recommended over google.maps.places.Autocomplete. While google.maps.places.Autocomplete will continue to receive bug fixes for any major regressions, existing bugs in google.maps.places.Autocomplete will not be addressed. At least 12 months notice will be given before support is discontinued. Please see https://developers.google.com/maps/legacy for additional details and https://developers.google.com/maps/documentation/javascript/places-migration-overview for the migration guide.
+[00:04:42.845] Browser WARN    Google Maps JavaScript API warning: InvalidKey https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key
+[00:04:53.014] Browser ERROR   Google Maps JavaScript API error: InvalidKeyMapError
+https://developers.google.com/maps/documentation/javascript/error-messages#invalid-key-map-error
+[00:21:48.289] Server  LOG     ✓ Compiled in 0ms
+[00:21:48.853] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[00:21:48.853] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[00:21:48.853] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773333844094} /_vercel/insights/view
+[00:22:18.029] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings?q=ar color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings?q=ar","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773333873447} /_vercel/insights/view
+[00:22:21.536] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773333876947} /_vercel/insights/view
+[00:22:38.809] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:22:38.809] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:22:40.045] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773333895354} /_vercel/insights/view
+[00:22:44.583] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:22:44.583] Browser WARN    Warning: Missing `Description` or `aria-describedby={undefined}` for {DialogContent}.
+[00:23:00.780] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773333916191} /_vercel/insights/view
+[00:26:38.979] Server  WARN    Supabase environment variables are not set. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to enable database features.
+[00:26:45.814] Server  WARN    Supabase environment variables are not set. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to enable database features.
+[00:26:51.071] Server  LOG     ✓ Compiled in 33ms
+[00:26:55.864] Server  LOG     ✓ Compiled in 37ms
+[01:01:40.238] Server  LOG       Reload env: .env.local
+[01:01:40.297] Server  WARN    Supabase environment variables are not set. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to enable database features.
+[01:02:25.408] Server  WARN    Supabase environment variables are not set. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to enable database features.
+[01:02:25.596] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings?q=ara color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings?q=ara","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773336280992} /_vercel/insights/view
+[01:02:32.634] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[01:02:32.634] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/listings","route":"/listings"}
+[01:02:32.634] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings?q=patna color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings?q=patna","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773336288061} /_vercel/insights/view
+[12:13:06.105] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773376521710} /_vercel/insights/view
+[13:03:31.041] Browser LOG     %c[Vercel Web Analytics]%c Debug mode is enabled by default in development. No requests will be sent to the server. color: rgb(120, 120, 120) color: inherit
+[13:03:31.041] Browser LOG     %c[Vercel Web Analytics]%c Running queued event color: rgb(120, 120, 120) color: inherit pageview {"path":"/","route":"/"}
+[13:03:31.041] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773379546671} /_vercel/insights/view
+[13:03:32.482] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773379548111} /_vercel/insights/view
+[13:03:35.276] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773379550897} /_vercel/insights/view
+[13:03:36.883] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings color: rgb(120, 120, 120) color: inherit {"dp":"/listings","o":"http://localhost:3000/listings","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773379552482} /_vercel/insights/view
+[13:03:38.895] Server  WARN    Supabase environment variables are not set. Set NEXT_PUBLIC_SUPABASE_URL and NEXT_PUBLIC_SUPABASE_ANON_KEY to enable database features.
+[13:03:39.051] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/listings/11 color: rgb(120, 120, 120) color: inherit {"dp":"/listings/[id]","o":"http://localhost:3000/listings/11","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773379554681} /_vercel/insights/view
+[13:03:51.886] Browser LOG     %c[Vercel Web Analytics]%c [view] http://localhost:3000/ color: rgb(120, 120, 120) color: inherit {"dp":"/","o":"http://localhost:3000/","sdkn":"@vercel/analytics/next","sdkv":"1.6.1","sv":"0.1.3","ts":1773379567507} /_vercel/insights/view
+[13:11:25.149] Server  LOG       Reload env: .env.local
+[13:11:25.504] Server  LOG     ✓ Compiled in 282ms
+[13:11:26.022] Server  ERROR   Error fetching properties from Supabase {}
+[13:11:26.023] Server  ERROR   Error fetching properties from Supabase {}
+[13:11:26.023] Server  ERROR   Error fetching properties from Supabase {}
+[13:11:26.045] Server  ERROR   Error fetching properties from Supabase {}

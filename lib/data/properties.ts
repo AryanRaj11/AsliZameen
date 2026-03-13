@@ -1,4 +1,5 @@
-import { Property } from '@/lib/types'
+import { Property, LandType } from '@/lib/types'
+import { supabase } from '@/lib/supabase-client'
 
 export const properties: Property[] = [
   {
@@ -308,3 +309,91 @@ export function searchProperties(query: string): Property[] {
     p.location.state.toLowerCase().includes(lowerQuery)
   )
 }
+
+type PropertyRow = {
+  id: string
+  title: string
+  description: string
+  price: number
+  size: number
+  size_unit: 'acres' | 'hectares' | 'sqft'
+  land_type: LandType
+  address: string
+  city: string
+  state: string
+  zip_code: string
+  features: string[]
+  images: string[]
+  seller_id: string
+  created_at: string
+  status: 'active' | 'pending' | 'sold'
+}
+
+function mapRowToProperty(row: PropertyRow): Property {
+  return {
+    id: row.id,
+    title: row.title,
+    description: row.description,
+    price: row.price,
+    size: row.size,
+    sizeUnit: row.size_unit,
+    landType: row.land_type,
+    location: {
+      address: row.address,
+      city: row.city,
+      state: row.state,
+      zipCode: row.zip_code,
+    },
+    features: row.features || [],
+    images: row.images || [],
+    sellerId: row.seller_id,
+    createdAt: row.created_at,
+    status: row.status,
+  }
+}
+
+export async function fetchAllProperties(): Promise<Property[]> {
+  if (!supabase) {
+    return properties
+  }
+
+  const { data, error } = await supabase
+    .from('properties')
+    .select('*')
+
+  if (error || !data) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching properties from Supabase', error)
+    return properties
+  }
+
+  return (data as PropertyRow[]).map(mapRowToProperty)
+}
+
+export async function fetchPropertyById(id: string): Promise<Property | null> {
+  if (!supabase) {
+    return getPropertyById(id) ?? null
+  }
+
+  const { data, error } = await supabase
+    .from('properties')
+    .select('*')
+    .eq('id', id)
+    .maybeSingle()
+
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching property by id from Supabase', error)
+    return getPropertyById(id) ?? null
+  }
+
+  if (!data) return null
+
+  return mapRowToProperty(data as PropertyRow)
+}
+
+export async function fetchFeaturedProperties(count: number = 6): Promise<Property[]> {
+  const all = await fetchAllProperties()
+  return all.filter(p => p.status === 'active').slice(0, count)
+}
+
