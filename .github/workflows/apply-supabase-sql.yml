@@ -39,4 +39,4 @@ jobs:
           for file in $(ls supabase/sql/*.sql | sort); do
             echo "Running $file"
             psql "$SUPABASE_DB_URL" -v ON_ERROR_STOP=1 -f "$file"
-          done
+          done        
