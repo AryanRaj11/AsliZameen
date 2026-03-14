@@ -63,6 +63,7 @@ export function ContactForm({ property }: ContactFormProps) {
   }
 
   return (
+    <>
     <Card>
       <CardHeader>
         <CardTitle>Contact Seller</CardTitle>
@@ -113,5 +114,21 @@ export function ContactForm({ property }: ContactFormProps) {
         </form>
       </CardContent>
     </Card>
+
+    <Card>
+      <CardHeader>
+        <CardTitle>Land Papers</CardTitle>
+        <CardDescription>
+          Send a message to {seller?.name || 'the seller'} about this property
+        </CardDescription>
+      </CardHeader>
+       <CardContent>
+          <div className="mb-6 flex items-center gap-4 rounded-lg bg-muted p-4">
+            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+            </div>
+            </div>
+              </CardContent>
+    </Card>
+    </>
   )
 }

@@ -386,6 +386,19 @@ export default function AddListingPage() {
             </CardContent>
           </Card>
 
+          <Card className="lg:col-span-2">
+            <CardHeader>
+              <CardTitle>Property Documents</CardTitle>
+              <CardDescription>Upload Sale Deed,Mutation Certificate,Lagaan Reciept</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex flex-col items-center rounded-lg border-2 border-dashed border-border py-12">
+                <Upload className="h-10 w-10 text-muted-foreground" />
+                <p className="text-xs text-muted-foreground">Click to browse</p>
+                </div>
+              </CardContent>
+          </Card>
+
           {/* Images */}
           <Card className="lg:col-span-2">
             <CardHeader>
