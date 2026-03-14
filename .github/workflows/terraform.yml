@@ -9,6 +9,9 @@ on:
 jobs:
   terraform:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./supabase/terraform
     env:
       # Project URL (replace if you ever change project ref)
       SUPABASE_URL: https://udypjslvtmthdeodzpev.supabase.co
