@@ -108,7 +108,7 @@ export default function RegisterPage() {
                 <Input
                   required
                   autoComplete="name"
-                  placeholder="John Doe"
+                  placeholder="Enter your full name"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 />
@@ -125,23 +125,12 @@ export default function RegisterPage() {
                 />
               </Field>
               <Field>
-                <FieldLabel>Password</FieldLabel>
+                <FieldLabel>Mobile Number</FieldLabel>
                 <Input
-                  type="password"
+                  type="number"
                   required
                   autoComplete="new-password"
-                  placeholder="At least 6 characters"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                />
-              </Field>
-              <Field>
-                <FieldLabel>Confirm Password</FieldLabel>
-                <Input
-                  type="password"
-                  required
-                  autoComplete="new-password"
-                  placeholder="Confirm your password"
+                  placeholder="+91"
                   value={formData.confirmPassword}
                   onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
                 />
