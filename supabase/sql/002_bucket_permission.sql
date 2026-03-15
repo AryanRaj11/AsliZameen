@@ -2,5 +2,5 @@
 
 CREATE POLICY "Allow authenticated uploads"
 ON storage.objects FOR INSERT
-TO authenticated
+TO authenticated,anon
 WITH CHECK (bucket_id = 'properties_image');
