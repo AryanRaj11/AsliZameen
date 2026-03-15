@@ -17,7 +17,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/lib/auth-context'
-import { properties } from '@/lib/data/properties'
+import { uploadImages, saveProperty } from '@/lib/data/properties'
 import { Property, LAND_TYPE_LABELS, LandType } from '@/lib/types'
 import { MapPin, Upload, X, CheckCircle } from 'lucide-react'
 
@@ -126,9 +126,21 @@ export default function AddListingPage() {
     }))
   }
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+
+    const files = fileInputRef.current?.files;
+  
+  if (files.length === 0) {
+    alert("Please select at least one image");
+    return;
+  }
+
+  // 2. Upload images first to get the URLs
+  const imageUrls = await uploadImages(files);
 
     // Create new property (mock - in real app, this would be an API call)
     const newProperty: Property = {
@@ -146,17 +158,13 @@ export default function AddListingPage() {
         zipCode: formData.zipCode,
       },
       features: formData.features,
-      images: PLACEHOLDER_IMAGES,
+      images: imageUrls,
       sellerId: user.id,
       createdAt: new Date().toISOString().split('T')[0],
       status: 'active',
     }
-
-    // Add to mock data
-    properties.unshift(newProperty)
-
-    // Simulate API delay
-    await new Promise(resolve => setTimeout(resolve, 1000))
+   
+    const save = await saveProperty(newProperty);
 
     setIsSubmitting(false)
     setIsSubmitted(true)

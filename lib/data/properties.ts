@@ -397,3 +397,73 @@ export async function fetchFeaturedProperties(count: number = 6): Promise<Proper
   return all.filter(p => p.status === 'active').slice(0, count)
 }
 
+export const saveProperty = async (Property_Info:Property):Promise<Boolean> => {
+  if (!supabase) {
+         return false
+       }  
+  const propertyData = Property_Info;
+  console.log(Property_Info);
+  try {
+    const { data, error } = await supabase
+      .from('properties')
+      .insert([
+        {
+          title: propertyData.title,
+          description: propertyData.description,
+          price: (propertyData.price),
+          size: (propertyData.size),
+          size_unit: propertyData.sizeUnit, // 'acres', 'hectares', or 'sqft'
+          land_type: propertyData.landType, // 'agricultural', 'residential', or 'commercial'
+          address: propertyData.location.address,
+          city: propertyData.location.city,
+          state: propertyData.location.state,
+          zip_code: propertyData.location.zipCode,
+          features: propertyData.features || [], // Expects an array ['Water', 'Fence']
+          images: propertyData.images || [],     // Expects an array of URLs/paths
+          seller_id: '9be20278-a98b-402a-aad2-e5fbf0b86cc2', // Your provided UUID
+          status: 'active'
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+
+    console.log('Property saved successfully:', data);
+    return true;
+  } catch (error) {
+    console.error('Error saving property:', error?.message);
+    return false;
+  }
+};
+
+export const uploadImages = async (files:FileList) => {
+  if (!supabase) {
+    return []
+  }  
+  const uploadedUrls = [];
+
+  for (const file of files) {
+    // Create a unique file name to avoid overwriting
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${Math.random()}.${fileExt}`;
+    const filePath = `${fileName}`;
+
+    const { data, error } = await supabase.storage
+      .from('properties_image')
+      .upload(filePath, file);
+
+    if (error) {
+      console.error('Upload error:', error.message);
+      continue;
+    }
+
+    // Get the Public URL
+    const { data: { publicUrl } } = supabase.storage
+      .from('properties_image')
+      .getPublicUrl(filePath);
+
+    uploadedUrls.push(publicUrl);
+  }
+
+  return uploadedUrls;
+};
