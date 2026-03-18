@@ -46,7 +46,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
       <Card className={cn('group overflow-hidden transition-all hover:shadow-lg', className)}>
         <div className="relative aspect-[4/3] overflow-hidden">
           <Image
-            src={property.images[0]}
+            src={property.images && property.images[0] ? property.images[0] : "/placeholder-house.jpg"}
             alt={property.title}
             fill
             className="object-cover transition-transform duration-300 group-hover:scale-105"

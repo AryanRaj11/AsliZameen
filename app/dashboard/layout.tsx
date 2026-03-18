@@ -52,7 +52,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
             {/* User Info */}
             <div className="mb-6 flex items-center gap-3">
               <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-lg font-semibold text-primary-foreground">
-                {user.name.charAt(0)}
+                {user.name?.charAt(0)}
               </div>
               <div>
                 <p className="font-medium">{user.name}</p>

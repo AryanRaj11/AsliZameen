@@ -4,51 +4,72 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
-import { properties } from '@/lib/data/properties'
+import { fetchAllProperties } from '@/lib/data/properties'
 import { PropertyCard } from '@/components/property/property-card'
 import { Heart, MapPin, Plus, ArrowRight, Eye } from 'lucide-react'
+import { useEffect, useState } from 'react'
+import { Property } from '@/lib/types'
 
 export default function DashboardPage() {
-  const { user } = useAuth()
+
+  const[properties,setProperties]=useState<Property[]>();
+
+   const { user } = useAuth()
 
   if (!user) return null
 
-  const canSell = user.role === 'seller' || user.role === 'both'
-  const myListings = properties.filter(p => p.sellerId === user.id)
-  const favoriteProperties = properties.filter(p => user.favorites.includes(p.id))
+   const canSell = user.role === 'seller' || user.role === 'admin'
+
+   useEffect(() => {
+    
+    const fetchProperties = async () => {
+      try {
+       await fetchAllProperties();
+       setProperties(properties)
+      } catch (error) {
+        console.error("Error fetching:", error);
+      }
+    };
+    fetchProperties();
+
+  }, [])
+
+   console.log(user);
+  const myListings = properties?.filter(p => p.sellerId === user.id) || []
+  const favoriteProperties = properties?.filter(p => user.favorites.includes(p.id)) || []
 
   const stats = [
     {
       label: 'Favorites',
-      value: user.favorites.length,
+      value: user.favorites,
       icon: Heart,
       href: '/dashboard/favorites',
     },
     ...(canSell ? [
       {
         label: 'My Listings',
-        value: myListings.length,
+        value: myListings?.length,
         icon: MapPin,
         href: '/dashboard/my-listings',
       },
       {
         label: 'Active Listings',
-        value: myListings.filter(p => p.status === 'active').length,
+        value: myListings?.filter(p => p.status === 'active').length,
         icon: Eye,
         href: '/dashboard/my-listings',
       },
     ] : []),
   ]
 
-  return (
-    <div className="space-y-8">
+   return (
+     <div className="space-y-8">
       {/* Header */}
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-        <div>
-          <h1 className="text-2xl font-bold">Welcome back, {user.name.split(' ')[0]}!</h1>
-          <p className="text-muted-foreground">Here&apos;s an overview of your account</p>
-        </div>
-        {canSell && (
+         <div>
+           <h1 className="text-2xl font-bold">Welcome back, {user.name}!</h1>
+           <p className="text-muted-foreground">Here&apos;s an overview of your account</p>
+         </div>
+         {canSell && (
           <Button asChild>
             <Link href="/dashboard/add-listing">
               <Plus className="mr-2 h-4 w-4" />
@@ -57,6 +78,7 @@ export default function DashboardPage() {
           </Button>
         )}
       </div>
+      
 
       {/* Stats */}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -153,4 +175,5 @@ export default function DashboardPage() {
       )}
     </div>
   )
+
 }

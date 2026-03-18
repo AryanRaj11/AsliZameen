@@ -1,4 +1,4 @@
-import { Property, LandType } from '@/lib/types'
+import { Property, LandType, User } from '@/lib/types'
 import { supabase } from '@/lib/supabase-client'
 
 export const properties: Property[] = [
@@ -302,7 +302,7 @@ export function getPropertiesBySeller(sellerId: string): Property[] {
 
 export function searchProperties(query: string): Property[] {
   const lowerQuery = query.toLowerCase()
-  return properties.filter(p => 
+  return properties.filter(p =>
     p.title.toLowerCase().includes(lowerQuery) ||
     p.description.toLowerCase().includes(lowerQuery) ||
     p.location.city.toLowerCase().includes(lowerQuery) ||
@@ -397,10 +397,10 @@ export async function fetchFeaturedProperties(count: number = 6): Promise<Proper
   return all.filter(p => p.status === 'active').slice(0, count)
 }
 
-export const saveProperty = async (Property_Info:Property):Promise<Boolean> => {
+export const saveProperty = async (Property_Info: Property): Promise<Boolean> => {
   if (!supabase) {
-         return false
-       }  
+    return false
+  }
   const propertyData = Property_Info;
   console.log(Property_Info);
   try {
@@ -436,10 +436,10 @@ export const saveProperty = async (Property_Info:Property):Promise<Boolean> => {
   }
 };
 
-export const uploadImages = async (files:FileList) => {
+export const uploadImages = async (files: FileList) => {
   if (!supabase) {
     return []
-  }  
+  }
   const uploadedUrls = [];
 
   for (const file of files) {
@@ -467,3 +467,52 @@ export const uploadImages = async (files:FileList) => {
 
   return uploadedUrls;
 };
+export async function googleSignIn(): Promise<Boolean> {
+  if (!supabase) {
+    return false
+  }
+  try{
+  await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    // options: {
+    //   redirectTo: window.location.origin + '/listings',
+    // },
+  })
+
+  return true
+}catch(error){
+  throw error;
+}
+}
+
+export async function registerUser(name: String,
+  email: String,
+  phone: Number,
+  role: String): Promise<Boolean> {
+  if (!supabase) {
+    return false
+  }
+
+  console.log(name);
+  try {
+    const { data, error } = await supabase
+      .from('users')
+      .insert([
+        {
+          name: name,
+          email: email,
+          phone: phone,
+          role: role,
+        }
+      ])
+      .select();
+
+    if (error) throw error;
+
+    console.log('User Details saved successfully:', data);
+    return true;
+  } catch (error) {
+    console.error('Error saving User Details:', error?.message);
+    return false;
+  }
+}

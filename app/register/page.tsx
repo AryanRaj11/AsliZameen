@@ -11,7 +11,9 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Label } from '@/components/ui/label'
 import { useAuth } from '@/lib/auth-context'
+import { registerUser } from '@/lib/data/properties'
 import { MapPin, AlertCircle, ShoppingCart, Store, Briefcase } from 'lucide-react'
+import { googleSignIn } from '@/lib/data/properties'
 
 const roleOptions = [
   {
@@ -27,8 +29,8 @@ const roleOptions = [
     icon: Store,
   },
   {
-    value: 'both',
-    label: 'Both',
+    value: 'admin',
+    label: 'Admin',
     description: 'Buy and sell properties',
     icon: Briefcase,
   },
@@ -37,13 +39,12 @@ const roleOptions = [
 export default function RegisterPage() {
   const router = useRouter()
   const { register } = useAuth()
-  
+
   const [formData, setFormData] = useState({
     name: '',
     email: '',
-    password: '',
-    confirmPassword: '',
-    role: 'buyer' as 'buyer' | 'seller' | 'both',
+    role: 'buyer' as 'buyer' | 'seller' | 'admin',
+    phone: +91
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -52,35 +53,31 @@ export default function RegisterPage() {
     e.preventDefault()
     setError('')
 
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match')
-      return
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
-      return
-    }
-
     setIsLoading(true)
 
-    const result = await register(
-      formData.name,
-      formData.email,
-      formData.password,
-      formData.role
-    )
-    
-    if (result.success) {
-      router.push('/dashboard')
+    const signin = await googleSignIn();
+
+    console.log("signin successfull");
+
+    if (signin) {
+      await registerUser(formData.name,
+        formData.email,
+        formData.phone,
+        formData.role);
+      
+    //   if(!registerUser){setError('User already exists');router.push('/login')}
+    //   else {
+    //  router.push('/listings')
+    //  }
     } else {
-      setError(result.error || 'Registration failed')
+      setError('Registration failed')
     }
-    
+
     setIsLoading(false)
+    
   }
 
-  return (
+  return !error ? ( 
     <div className="flex min-h-[calc(100vh-8rem)] items-center justify-center px-4 py-12">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
@@ -129,17 +126,17 @@ export default function RegisterPage() {
                 <Input
                   type="number"
                   required
-                  autoComplete="new-password"
+                  autoComplete="phone-number"
                   placeholder="+91"
-                  value={formData.confirmPassword}
-                  onChange={(e) => setFormData({ ...formData, confirmPassword: e.target.value })}
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </Field>
               <Field>
                 <FieldLabel>I want to...</FieldLabel>
                 <RadioGroup
                   value={formData.role}
-                  onValueChange={(value) => setFormData({ ...formData, role: value as 'buyer' | 'seller' | 'both' })}
+                  onValueChange={(value) => setFormData({ ...formData, role: value as 'buyer' | 'seller' | 'admin' })}
                   className="mt-2 grid gap-3"
                 >
                   {roleOptions.map((option) => (
@@ -183,5 +180,7 @@ export default function RegisterPage() {
         </CardFooter>
       </Card>
     </div>
-  )
+  ):
+
+  <>User already registered</> 
 }
