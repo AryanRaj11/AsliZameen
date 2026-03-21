@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS public.users (
     name        text        NOT NULL,
     email       text        NOT NULL UNIQUE,
     phone       text,
-    role        text        NOT NULL CHECK (role IN ('buyer', 'seller', 'both')),
+    role        text        NOT NULL CHECK (role IN ('buyer', 'seller', 'admin')),
     favorites   uuid[]      NOT NULL DEFAULT '{}', -- Use uuid[] to reference property IDs
     created_at  timestamptz NOT NULL DEFAULT now()
 );

@@ -5,19 +5,33 @@ import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 import { Card, CardContent } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
-import { 
-  DropdownMenu, 
-  DropdownMenuContent, 
-  DropdownMenuItem, 
-  DropdownMenuTrigger 
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/lib/auth-context'
-import { properties } from '@/lib/data/properties'
-import { LAND_TYPE_LABELS } from '@/lib/types'
+import { getFeaturedProperties } from '@/lib/data/properties'
+import { LAND_TYPE_LABELS, Property } from '@/lib/types'
 import { Plus, MoreVertical, Edit, Eye, Trash2, MapPin } from 'lucide-react'
+import { useEffect, useState } from 'react'
 
 export default function MyListingsPage() {
   const { user } = useAuth()
+
+  const [properties, setProperties] = useState<Property[] | []>([]);
+
+  useEffect(() => {
+    const getProperties = async () => {
+      const result = await getFeaturedProperties();
+      setProperties(result);
+      console.log('properties')
+      console.log(user.id)
+      console.log(result[0].seller_id)
+    }
+    getProperties();
+  }, [])
 
   if (!user) return null
 
@@ -35,7 +49,7 @@ export default function MyListingsPage() {
     )
   }
 
-  const myListings = properties.filter(p => p.sellerId === user.id)
+  const myListings = properties.filter(p => p.seller_id === user.id)
 
   const formatPrice = (price: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -99,7 +113,7 @@ export default function MyListingsPage() {
                       </Link>
                     </h3>
                     <p className="mt-1 text-sm text-muted-foreground">
-                      {property.location.city}, {property.location.state}
+                      {property.city}, {property.state}
                     </p>
                     <div className="mt-2 flex items-center gap-4 text-sm">
                       <span className="font-semibold text-primary">

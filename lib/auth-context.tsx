@@ -12,13 +12,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const pathname = usePathname()
 
   // --- NEW: Extra state from your old code ---
- const [favorites, setFavorites] = useState<string[]>([])
+  const [favorites, setFavorites] = useState<string[]>([])
 
   useEffect(() => {
     const getInitialSession = async () => {
       const { data: { session } } = await supabase.auth.getSession()
       handleUserChange(session?.user ?? null)
-      
+
       // if (session && (pathname === '/' || pathname === '/login')) {
       //   router.push('/dashboard')
       // }
@@ -29,18 +29,22 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       handleUserChange(session?.user ?? null)
-      
-      if (event === 'SIGNED_IN') router.push('/listings')
+
+     // if (event === 'SIGNED_IN') router.push('/listings')
       if (event === 'SIGNED_OUT') router.push('/')
-      
+
       setLoading(false)
     })
 
     return () => subscription.unsubscribe()
-  }, [router, pathname])
+  }, [])
 
   // Helper to sync Supabase User with your App Logic
-  const handleUserChange = async(supabaseUser: any) => {
+  const handleUserChange = async (supabaseUser: any) => {
+    // 🛑 FIX: If the ID hasn't changed, don't re-fetch from 'users' table
+  if (user && supabaseUser && user.id === supabaseUser.id) {
+    return;
+  }
     setUser(supabaseUser)
     if (supabaseUser) {
       try {
@@ -49,9 +53,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           .select('*')
           .eq('email', supabaseUser.email)
           .single()
-        
+
         if (data) setUser(data)
-          console.log(data);
+        console.log(data);
         // If error, it might be because the trigger hasn't finished yet or table is missing
       } catch (e) {
         console.error("Profile fetch failed:", e)
@@ -60,25 +64,44 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // in metadata or a separate table, load them here
       //setFavorites(supabaseUser.user_metadata?.favorites || [])
     } else {
-     // setFavorites([])
+      // setFavorites([])
     }
   }
 
   // --- ADDED: Re-implementing your old functions using Supabase ---
-  
+  const login = async (email: string, phone: Number): Promise<boolean> => {
+    try {
+      const { data, error } = await supabase
+        .from('users')
+        .select('*')
+        .eq('email', email)   // AND
+        .eq('phone', phone)   // AND
+        .maybeSingle(); // Returns null instead of error if no user found
+
+      if (error) throw error;
+
+      // If data exists, it means a user was found
+      setUser(data);
+
+      return !!data;
+    } catch (error) {
+      console.error("Error checking user:", error.message);
+      return false;
+    }
+  };
   const logout = async () => {
-    await supabase.auth.signOut()
+    await supabase?.auth.signOut()
   }
 
   const toggleFavorite = async (propertyId: string) => {
     if (!user) return
     const isFav = favorites.includes(propertyId)
-    const updated = isFav 
-      ? favorites.filter(id => id !== propertyId) 
+    const updated = isFav
+      ? favorites.filter(id => id !== propertyId)
       : [...favorites, propertyId]
-    
+
     setFavorites(updated)
-    
+
     // Optional: Save back to Supabase metadata
     await supabase.auth.updateUser({
       data: { favorites: updated }
@@ -91,12 +114,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const value = {
     user,
     loading,
+    login,
     logout,
     favorites,
     toggleFavorite,
     isFavorite,
     // Add roles if you have them in metadata
-    role: user?.user_metadata?.role || 'buyer' 
+    role: user?.user_metadata?.role || 'buyer'
   }
 
   return (

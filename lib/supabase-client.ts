@@ -13,6 +13,14 @@ if (!supabaseUrl || !supabaseKey) {
 
 export const supabase =
   supabaseUrl && supabaseKey
-    ? createClient(supabaseUrl, supabaseKey)
+    ? createClient(supabaseUrl, supabaseKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        // Prevents the "re-fetch on focus" behavior
+        storageKey: 'asli-zameen-auth-token', 
+      }
+    })
     : null
 

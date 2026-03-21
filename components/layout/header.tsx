@@ -79,12 +79,12 @@ export function Header() {
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
+                  {/* <DropdownMenuItem asChild>
                     <Link href="/dashboard/favorites" className="flex items-center">
                       <Heart className="mr-2 h-4 w-4" />
                       Favorites
                     </Link>
-                  </DropdownMenuItem>
+                  </DropdownMenuItem> */}
                   {canSell && (
                     <DropdownMenuItem asChild>
                       <Link href="/dashboard/my-listings" className="flex items-center">

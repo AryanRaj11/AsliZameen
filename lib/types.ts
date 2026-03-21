@@ -6,17 +6,18 @@ export interface Property {
   size: number
   sizeUnit: 'acres' | 'hectares' | 'sqft'
   landType: 'agricultural' | 'residential' | 'commercial'
-  location: {
     address: string
     city: string
     state: string
-    zipCode: string
-  }
+    zip_code: string
   features: string[]
   images: string[]
-  sellerId: string
+  seller_id: string
   createdAt: string
   status: 'active' | 'pending' | 'sold'
+  lat:number
+  lng:number
+  location:string
 }
 
 export interface User {
@@ -24,7 +25,7 @@ export interface User {
   name: string
   email: string
   phone: string
-  role: 'buyer' | 'seller' | 'both'
+  role: 'buyer' | 'seller' | 'admin'
   favorites?: string[]
   createdAt: string
 }

@@ -30,8 +30,8 @@ async function ListingsContent({ searchParams }: ListingsPageProps) {
     filteredProperties = filteredProperties.filter(p => 
       p.title.toLowerCase().includes(query) ||
       p.description.toLowerCase().includes(query) ||
-      p.location.city.toLowerCase().includes(query) ||
-      p.location.state.toLowerCase().includes(query)
+      p.city.toLowerCase().includes(query) ||
+      p.state.toLowerCase().includes(query)
     )
   }
 

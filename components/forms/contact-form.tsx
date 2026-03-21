@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Textarea } from '@/components/ui/textarea'
@@ -10,6 +10,7 @@ import { useAuth } from '@/lib/auth-context'
 import { Property } from '@/lib/types'
 import { getUserById } from '@/lib/data/users'
 import { Send, Phone, Mail, CheckCircle } from 'lucide-react'
+import { User } from '@/lib/types'
 
 interface ContactFormProps {
   property: Property
@@ -17,7 +18,21 @@ interface ContactFormProps {
 
 export function ContactForm({ property }: ContactFormProps) {
   const { user } = useAuth()
-  const seller = getUserById(property.sellerId)
+
+  const [seller, setSeller] = useState<User | null>();
+
+  useEffect(() => {
+
+    const sellerDetails = async () => {
+      const result = await getUserById(property.seller_id)
+      setSeller(result)
+    }
+    console.log(user);
+
+    sellerDetails()
+  }, [])
+
+
 
   const [formData, setFormData] = useState({
     name: user?.name || '',
@@ -31,6 +46,11 @@ export function ContactForm({ property }: ContactFormProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
+
+    if (!user) {
+      e.preventDefault();
+      alert("Please login to contact the seller");
+    }
 
     // Simulate form submission
     await new Promise(resolve => setTimeout(resolve, 1000))
@@ -63,72 +83,76 @@ export function ContactForm({ property }: ContactFormProps) {
   }
 
   return (
-    <>
-    <Card>
-      <CardHeader>
-        <CardTitle>Contact Seller</CardTitle>
-        <CardDescription>
-          Send a message to {seller?.name || 'the seller'} about this property
-        </CardDescription>
-      </CardHeader>
-      <CardContent>
-        {seller && (
-          <div className="mb-6 flex items-center gap-4 rounded-lg bg-muted p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-              {seller.name.charAt(0)}
-            </div>
-            <div>
-              <p className="font-medium">{seller.name}</p>
-              <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
-                {seller.phone && (
+    <div className="flex flex-col gap-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Contact Seller</CardTitle>
+          <CardDescription>
+            Send a message to {seller?.name || 'the seller'} about this property
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {seller && (
+            <div className="mb-6 flex items-center gap-4 rounded-lg bg-muted p-4">
+              <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+                {seller.name.charAt(0)}
+              </div>
+              <div>
+                <p className="font-medium">{seller.name}</p>
+                <div className="mt-1 flex flex-wrap gap-3 text-sm text-muted-foreground">
+                  {seller.phone && user ? (
+                    // Show real number if logged in
+                    <span>{seller.phone}</span>
+                  ) : (
+                    // Show masked version if not logged in
+                    <span className="text-gray-400 tracking-widest">XXXXXX-XXXX</span>
+                  )}
                   <span className="flex items-center gap-1">
-                    <Phone className="h-3 w-3" />
-                    {seller.phone}
+                    <Mail className="h-3 w-3" />
+                    {seller.email}
                   </span>
-                )}
-                <span className="flex items-center gap-1">
-                  <Mail className="h-3 w-3" />
-                  {seller.email}
-                </span>
+                </div>
               </div>
             </div>
-          </div>
-        )}
+          )}
 
-        <form onSubmit={handleSubmit}>
+          <form onSubmit={handleSubmit}>
 
+            <a href={user && `https://wa.me/${seller?.phone}?text=${encodeURIComponent("Hello, I'm interested in your property")}`} target="_blank" rel="noopener noreferrer">
 
-          <a href="https://wa.me/15551234567?text=Hello" target="_blank">
+              {/* <a href="https://wa.me/{seller.phone}?text=Hello" target="_blank"> */}
 
-            <Button type="button" className="mt-4 w-full" disabled={isSubmitting}>
-              {isSubmitting ? (
-                'Sending...'
-              ) : (
-                <>
-                  <Send className="mr-2 h-4 w-4" />
-                  Send WhatsApp Message
-                </>
-              )}
-            </Button>
-          </a>
-        </form>
-      </CardContent>
-    </Card>
+              <Button type="button" className="mt-4 w-full" disabled={isSubmitting || !user}>
+                {isSubmitting ? (
+                  'Sending...'
+                ) : (
+                  <>
+                    <Send className="mr-2 h-4 w-4" />
+                    Send WhatsApp Message to the Seller
+                  </>
+                )}
+              </Button>
+            </a>
+          </form>
+        </CardContent>
+      </Card>
 
-    <Card>
-      <CardHeader>
-        <CardTitle>Land Papers</CardTitle>
-        <CardDescription>
-          Send a message to {seller?.name || 'the seller'} about this property
-        </CardDescription>
-      </CardHeader>
-       <CardContent>
+      <Card>
+        <CardHeader>
+          <CardTitle>Land Papers</CardTitle>
+          <CardDescription>
+            Send a message to {seller?.name || 'the seller'} about this property
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
           <div className="mb-6 flex items-center gap-4 rounded-lg bg-muted p-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-            </div>
-            </div>
-              </CardContent>
-    </Card>
-    </>
+            Lagaan Reciept
+            {/* <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
+          
+            </div> */}
+          </div>
+        </CardContent>
+      </Card>
+      </div>
   )
 }

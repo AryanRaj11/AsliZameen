@@ -35,16 +35,16 @@ export default function DashboardPage() {
   }, [])
 
    console.log(user);
-  const myListings = properties?.filter(p => p.sellerId === user.id) || []
+  const myListings = properties?.filter(p => p.seller_id === user.id) || []
   const favoriteProperties = properties?.filter(p => user.favorites.includes(p.id)) || []
 
   const stats = [
-    {
-      label: 'Favorites',
-      value: user.favorites,
-      icon: Heart,
-      href: '/dashboard/favorites',
-    },
+    // {
+    //   label: 'Favorites',
+    //   value: user.favorites,
+    //   icon: Heart,
+    //   href: '/dashboard/favorites',
+    // },
     ...(canSell ? [
       {
         label: 'My Listings',
@@ -100,7 +100,7 @@ export default function DashboardPage() {
       </div>
 
       {/* Recent Favorites */}
-      {favoriteProperties.length > 0 && (
+      {/* {favoriteProperties.length > 0 && (
         <Card>
           <CardHeader className="flex flex-row items-center justify-between">
             <div>
@@ -122,7 +122,7 @@ export default function DashboardPage() {
             </div>
           </CardContent>
         </Card>
-      )}
+      )} */}
 
       {/* My Listings (for sellers) */}
       {canSell && myListings.length > 0 && (

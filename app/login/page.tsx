@@ -10,6 +10,7 @@ import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/lib/auth-context'
 import { MapPin, AlertCircle } from 'lucide-react'
+import { googleSignIn } from '@/lib/data/properties'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -17,7 +18,7 @@ export default function LoginPage() {
   
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
+    phone: '',
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
@@ -27,15 +28,29 @@ export default function LoginPage() {
     setError('')
     setIsLoading(true)
 
-    const result = await login(formData.email, formData.password)
+    const result = await login(formData.email, formData.phone)
     
-    if (result.success) {
+    if (result) {
       router.push('/dashboard')
     } else {
       setError(result.error || 'Login failed')
     }
     
     setIsLoading(false)
+  }
+
+  const handlelogin = async(e:React.FormEvent)=>{
+    e.preventDefault()
+    setError('')
+
+    setIsLoading(true)
+
+    const signin = await googleSignIn();
+
+    console.log("signin successfull");
+
+    setIsLoading(false)
+    
   }
 
   return (
@@ -49,6 +64,8 @@ export default function LoginPage() {
           <CardDescription>
             Sign in to your AsliZameen account
           </CardDescription>
+          <Button onClick={handlelogin}>Log in via Google</Button>
+          <h1>OR</h1>
         </CardHeader>
 
         <CardContent>
@@ -57,8 +74,8 @@ export default function LoginPage() {
               <AlertCircle className="h-4 w-4" />
               <AlertDescription>{error}</AlertDescription>
             </Alert>
-          )}
-
+          )} 
+          
           <form onSubmit={handleSubmit}>
             <FieldGroup>
               <Field>
@@ -74,18 +91,18 @@ export default function LoginPage() {
               </Field>
               <Field>
                 <div className="flex items-center justify-between">
-                  <FieldLabel>Password</FieldLabel>
-                  <Link href="#" className="text-xs text-primary hover:underline">
+                  <FieldLabel>Mobile No.</FieldLabel>
+                  {/* <Link href="#" className="text-xs text-primary hover:underline">
                     Forgot password?
-                  </Link>
+                  </Link> */}
                 </div>
                 <Input
-                  type="password"
+                  type="Number"
                   required
                   autoComplete="current-password"
-                  placeholder="Enter your password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  placeholder="Enter your Mobile No."
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                 />
               </Field>
             </FieldGroup>

@@ -85,7 +85,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                 <div className="mt-2 flex items-center gap-1 text-muted-foreground">
                   <MapPin className="h-4 w-4" />
                   <span>
-                    {property.location.address}, {property.location.city}, {property.location.state} {property.location.zipCode}
+                    {property.address}, {property.city}, {property.state} {property.zip_code}  
                   </span>
                 </div>
               </div>
@@ -171,9 +171,9 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                   </div>
                 </div>
                 <div className="mt-4">
-                  <p className="font-medium">{property.location.address}</p>
+                  <p className="font-medium">{property.address}</p>
                   <p className="text-muted-foreground">
-                    {property.location.city}, {property.location.state} {property.location.zipCode}
+                    {property.city}, {property.state} {property.zip_code}
                   </p>
                 </div>
               </CardContent>
