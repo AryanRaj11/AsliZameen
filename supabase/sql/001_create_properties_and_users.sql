@@ -27,6 +27,7 @@ CREATE TABLE IF NOT EXISTS public.properties (
     zip_code    text        NOT NULL,
     features    text[]      NOT NULL DEFAULT '{}',
     images      text[]      NOT NULL DEFAULT '{}',
+    land_papers text[]      NOT NULL DEFAULT '{}',
     seller_id   uuid        NOT NULL,
     created_at  timestamptz NOT NULL DEFAULT now(),
     status      text        NOT NULL DEFAULT 'active' 
