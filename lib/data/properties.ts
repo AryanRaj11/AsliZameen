@@ -46,7 +46,7 @@ export async function getPropertiesBySeller(sellerId: string): Promise<Property[
 
 export async function searchProperties(query: string): Promise<Property[]> {
   const searchTerm = `%${query}%`
-  
+
   const { data, error } = await supabase
     .from('properties')
     .select('*')
@@ -85,11 +85,11 @@ function mapRowToProperty(row: PropertyRow): Property {
     price: row.price,
     size: row.size,
     sizeUnit: row.size_unit,
-    landType: row.land_type,  
-      address: row.address,
-      city: row.city,
-      state: row.state,
-      zip_code: row.zip_code,
+    landType: row.land_type,
+    address: row.address,
+    city: row.city,
+    state: row.state,
+    zip_code: row.zip_code,
     features: row.features || [],
     images: row.images || [],
     seller_id: row.seller_id,
@@ -188,47 +188,78 @@ export const uploadImages = async (files: FileList) => {
   }
   const uploadedUrls = [];
 
-  for (const file of files) {
-    // Create a unique file name to avoid overwriting
-    const fileExt = file.name.split('.').pop();
-    const fileName = `${Math.random()}.${fileExt}`;
-    const filePath = `${fileName}`;
+  try {
 
-    const { data, error } = await supabase.storage
-      .from('properties_image')
-      .upload(filePath, file);
+    for (const file of files) {
+      // Create a unique file name to avoid overwriting
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
 
-    if (error) {
-      console.error('Upload error:', error.message);
-      continue;
+      const { data, error } = await supabase.storage
+        .from('properties_image')
+        .upload(filePath, file);
+      // Get the Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('properties_image')
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(publicUrl);
     }
 
-    // Get the Public URL
-    const { data: { publicUrl } } = supabase.storage
-      .from('properties_image')
-      .getPublicUrl(filePath);
-
-    uploadedUrls.push(publicUrl);
+    return uploadedUrls;
   }
+  catch (err) {
+    throw new Error("error in uploading to db");
+  }
+};
 
-  return uploadedUrls;
+export const uploadLandPapers = async (files: FileList) => {
+  if (!supabase) {
+    return []
+  }
+  const uploadedUrls = [];
+  try {
+    for (const file of files) {
+      // Create a unique file name to avoid overwriting
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('properties_papers')
+        .upload(filePath, file);
+
+      // Get the Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('properties_papers')
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(publicUrl);
+    }
+
+    return uploadedUrls;
+  }
+  catch (err) {
+    throw new Error("error in uploading to db");
+  }
 };
 export async function googleSignIn(): Promise<Boolean> {
   if (!supabase) {
     return false
   }
-  try{
-  await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    // options: {
-    //   redirectTo: window.location.origin + '/listings',
-    // },
-  })
+  try {
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      // options: {
+      //   redirectTo: window.location.origin + '/listings',
+      // },
+    })
 
-  return true
-}catch(error){
-  throw error;
-}
+    return true
+  } catch (error) {
+    throw error;
+  }
 }
 
 export async function registerUser(name: String,
