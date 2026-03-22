@@ -12,6 +12,7 @@ export interface Property {
     zip_code: string
   features: string[]
   images: string[]
+  land_papers:string[]
   seller_id: string
   createdAt: string
   status: 'active' | 'pending' | 'sold'
