@@ -163,6 +163,7 @@ export const saveProperty = async (Property_Info: Property): Promise<Boolean> =>
           address: propertyData.address,
           city: propertyData.city,
           state: propertyData.state,
+          land_papers : propertyData.land_papers,
           zip_code: propertyData.zip_code,
           features: propertyData.features || [], // Expects an array ['Water', 'Fence']
           images: propertyData.images || [],     // Expects an array of URLs/paths
@@ -218,6 +219,8 @@ export const uploadLandPapers = async (files: FileList) => {
   if (!supabase) {
     return []
   }
+
+  console.log("inside land appers")
   const uploadedUrls = [];
   try {
     for (const file of files) {
@@ -230,6 +233,8 @@ export const uploadLandPapers = async (files: FileList) => {
         .from('properties_papers')
         .upload(filePath, file);
 
+        console.log(data);
+
       // Get the Public URL
       const { data: { publicUrl } } = supabase.storage
         .from('properties_papers')
@@ -237,7 +242,8 @@ export const uploadLandPapers = async (files: FileList) => {
 
       uploadedUrls.push(publicUrl);
     }
-
+    console.log("uploadedUrls")
+console.log(uploadedUrls)
     return uploadedUrls;
   }
   catch (err) {
