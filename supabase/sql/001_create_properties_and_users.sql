@@ -52,8 +52,8 @@ CREATE EXTENSION IF NOT EXISTS postgis;
 -- ALTER TABLE properties 
 -- ADD COLUMN location geography(POINT, 4326);
 
--- Create a spatial index (Crucial for speed!)
-CREATE INDEX properties_geo_index ON properties USING GIST (location);
+-- -- Create a spatial index (Crucial for speed!)
+-- CREATE INDEX properties_geo_index ON properties USING GIST (location);
 
 -- need to this because location is stored in a particular format which cannnot be used directly,
 -- so creating a view of the tablw with required columns
