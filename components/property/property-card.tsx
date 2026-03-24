@@ -17,7 +17,7 @@ interface PropertyCardProps {
 
 export function PropertyCard({ property, className }: PropertyCardProps) {
   const { user, toggleFavorite, isFavorite } = useAuth()
-  const favorite = isFavorite(property.id)
+ // const favorite = isFavorite(property.id)
 
   const handleFavoriteClick = (e: React.MouseEvent) => {
     e.preventDefault()
@@ -68,7 +68,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
           </Badge>
 
           {/* Favorite Button */}
-          {user && (
+          {/* {user && (
             <Button
               variant="ghost"
               size="icon"
@@ -83,7 +83,7 @@ export function PropertyCard({ property, className }: PropertyCardProps) {
                 {favorite ? 'Remove from favorites' : 'Add to favorites'}
               </span>
             </Button>
-          )}
+          )} */}
 
           {/* Price Overlay */}
           <div className="absolute bottom-3 left-3">

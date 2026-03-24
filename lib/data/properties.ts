@@ -75,6 +75,10 @@ type PropertyRow = {
   seller_id: string
   created_at: string
   status: 'active' | 'pending' | 'sold'
+  lat:number
+  lng:number
+  location:string
+  land_papers:string[]
 }
 
 function mapRowToProperty(row: PropertyRow): Property {
@@ -95,6 +99,10 @@ function mapRowToProperty(row: PropertyRow): Property {
     seller_id: row.seller_id,
     createdAt: row.created_at,
     status: row.status,
+    lat:row.lat,
+    lng:row.lng,
+    location:row.location,
+    land_papers:row.land_papers
   }
 }
 
@@ -122,10 +130,12 @@ export async function fetchPropertyById(id: string): Promise<Property | null> {
   }
 
   const { data, error } = await supabase
-    .from('properties')
+    .from('properties_with_coords')
     .select('*')
     .eq('id', id)
     .maybeSingle()
+
+    console.log(`data - ${JSON.stringify(data)} `)
 
   if (error) {
     // eslint-disable-next-line no-console
@@ -168,7 +178,8 @@ export const saveProperty = async (Property_Info: Property): Promise<Boolean> =>
           features: propertyData.features || [], // Expects an array ['Water', 'Fence']
           images: propertyData.images || [],     // Expects an array of URLs/paths
           seller_id: '9be20278-a98b-402a-aad2-e5fbf0b86cc2', // Your provided UUID
-          status: 'active'
+          status: 'active',
+          location:`POINT(${propertyData.lng} ${propertyData.lat})`
         }
       ])
       .select();

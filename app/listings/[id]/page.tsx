@@ -10,7 +10,7 @@ import { fetchAllProperties, fetchPropertyById } from '@/lib/data/properties'
 import { LAND_TYPE_LABELS } from '@/lib/types'
 import { ArrowLeft, MapPin, Ruler, Calendar, Check, Share2 } from 'lucide-react'
 import { FavoriteButton } from './favorite-button'
-
+import PropertyMap  from './property_map'
 interface PropertyDetailPageProps {
   params: Promise<{ id: string }>
 }
@@ -18,6 +18,8 @@ interface PropertyDetailPageProps {
 export default async function PropertyDetailPage({ params }: PropertyDetailPageProps) {
   const { id } = await params
   const property = await fetchPropertyById(id)
+  const lat=property?.lat
+  const lng=property?.lng
   const allProperties = await fetchAllProperties()
 
   if (!property) {
@@ -167,8 +169,8 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                 <div className="aspect-video overflow-hidden rounded-lg bg-muted">
                   <div className="flex h-full items-center justify-center text-muted-foreground">
                     <MapPin className="mr-2 h-5 w-5" />
-                    Map view would be integrated here
-                  </div>
+                    <PropertyMap position={{ lat: property.lat, lng: property.lng }} />
+                    </div>
                 </div>
                 <div className="mt-4">
                   <p className="font-medium">{property.address}</p>
@@ -177,6 +179,15 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
                   </p>
                 </div>
               </CardContent>
+              <div className="ml-5 text-left">
+    <a 
+      href={`https://www.google.com/maps/search/?api=1&query=${lat},${lng}`}
+      target="_blank"
+      className="text-sm text-primary font-medium hover:underline"
+    >
+      View on Google Maps →
+    </a>
+  </div>
             </Card>
           </div>
         </div>
