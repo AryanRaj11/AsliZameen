@@ -44,3 +44,13 @@ CREATE TABLE IF NOT EXISTS public.properties (
 -- 4. Create indexes for performance (Recommended)
 CREATE INDEX IF NOT EXISTS idx_properties_seller_id ON public.properties(seller_id);
 CREATE INDEX IF NOT EXISTS idx_properties_status ON public.properties(status);
+
+
+CREATE EXTENSION IF NOT EXISTS postgis;
+
+-- Add the location column to your properties table
+ALTER TABLE properties 
+ADD COLUMN location geography(POINT, 4326);
+
+-- Create a spatial index (Crucial for speed!)
+CREATE INDEX properties_geo_index ON properties USING GIST (location);
