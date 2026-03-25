@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
-import { fetchAllProperties } from '@/lib/data/properties'
+import { fetchAllActiveProperties } from '@/lib/data/properties'
 import { PropertyGrid } from '@/components/property/property-grid'
 import { Heart } from 'lucide-react'
 

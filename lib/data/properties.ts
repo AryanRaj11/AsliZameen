@@ -2,16 +2,7 @@ import { Property, LandType, User } from '@/lib/types'
 import { supabase } from '@/lib/supabase-client'
 
 
-export async function getPropertyById(id: string): Promise<Property | undefined> {
-  const { data, error } = await supabase
-    .from('properties')
-    .select('*')
-    .eq('id', id)
-    .single()
 
-  if (error || !data) return undefined
-  return data as Property
-}
 
 export async function getFeaturedProperties(count: number = 6): Promise<Property[]> {
   const { data, error } = await supabase
@@ -106,7 +97,7 @@ function mapRowToProperty(row: PropertyRow): Property {
   }
 }
 
-export async function fetchAllProperties(): Promise<Property[]> {
+export async function fetchAllActiveProperties(): Promise<Property[]> {
   if (!supabase) {
     return []
   }
@@ -114,6 +105,7 @@ export async function fetchAllProperties(): Promise<Property[]> {
   const { data, error } = await supabase
     .from('properties')
     .select('*')
+    .eq('status','active')
 
   if (error || !data) {
     // eslint-disable-next-line no-console
@@ -133,10 +125,8 @@ export async function fetchPropertyById(id: string): Promise<Property | null> {
     .from('properties_with_coords')
     .select('*')
     .eq('id', id)
+    .eq('status','active')
     .maybeSingle()
-
-    console.log(`data - ${JSON.stringify(data)} `)
-
   if (error) {
     // eslint-disable-next-line no-console
     console.error('Error fetching property by id from Supabase', error)
@@ -148,10 +138,12 @@ export async function fetchPropertyById(id: string): Promise<Property | null> {
   return mapRowToProperty(data as PropertyRow)
 }
 
+
 export async function fetchFeaturedProperties(count: number = 6): Promise<Property[]> {
-  const all = await fetchAllProperties()
+  const all = await fetchAllActiveProperties()
   return all.filter(p => p.status === 'active').slice(0, count)
 }
+
 
 export const saveProperty = async (Property_Info: Property): Promise<Boolean> => {
   if (!supabase) {
@@ -178,13 +170,14 @@ export const saveProperty = async (Property_Info: Property): Promise<Boolean> =>
           features: propertyData.features || [], // Expects an array ['Water', 'Fence']
           images: propertyData.images || [],     // Expects an array of URLs/paths
           seller_id: '9be20278-a98b-402a-aad2-e5fbf0b86cc2', // Your provided UUID
-          status: 'active',
+          status: 'pending',
           location:`POINT(${propertyData.lng} ${propertyData.lat})`
         }
       ])
       .select();
 
     if (error) throw error;
+
 
     console.log('Property saved successfully:', data);
     return true;
@@ -218,7 +211,6 @@ export const uploadImages = async (files: FileList) => {
 
       uploadedUrls.push(publicUrl);
     }
-
     return uploadedUrls;
   }
   catch (err) {

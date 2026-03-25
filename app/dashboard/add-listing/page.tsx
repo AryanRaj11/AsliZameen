@@ -273,7 +273,7 @@ export default function AddListingPage() {
     return (
       <Card className="text-center py-12">
         <CheckCircle className="mx-auto h-12 w-12 text-primary mb-4" />
-        <h3 className="text-xl font-bold">Listing Created!</h3>
+        <h3 className="text-xl font-bold">Thank you for posting,Land will available for buyers once Land Papers verification is successfull !</h3>
         <Button className="mt-6" onClick={() => router.push('/dashboard/my-listings')}>View Listings</Button>
       </Card>
     );
