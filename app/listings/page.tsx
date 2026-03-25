@@ -2,7 +2,7 @@ import { Suspense } from 'react'
 import { Input } from '@/components/ui/input'
 import { PropertyGrid } from '@/components/property/property-grid'
 import { PropertyFilters } from '@/components/property/property-filters'
-import { fetchAllProperties } from '@/lib/data/properties'
+import { fetchAllActiveProperties } from '@/lib/data/properties'
 import { Search } from 'lucide-react'
 
 interface ListingsPageProps {
@@ -19,7 +19,7 @@ interface ListingsPageProps {
 
 async function ListingsContent({ searchParams }: ListingsPageProps) {
   const params = await searchParams
-  const allProperties = await fetchAllProperties()
+  const allProperties = await fetchAllActiveProperties()
 
   // Filter properties based on search params
   let filteredProperties = [...allProperties].filter(p => p.status === 'active')

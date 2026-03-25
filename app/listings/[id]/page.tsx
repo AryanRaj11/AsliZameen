@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PropertyGallery } from '@/components/property/property-gallery'
 import { PropertyGrid } from '@/components/property/property-grid'
 import { ContactForm } from '@/components/forms/contact-form'
-import { fetchAllProperties, fetchPropertyById } from '@/lib/data/properties'
+import { fetchAllActiveProperties, fetchPropertyById } from '@/lib/data/properties'
 import { LAND_TYPE_LABELS } from '@/lib/types'
 import { ArrowLeft, MapPin, Ruler, Calendar, Check, Share2 } from 'lucide-react'
 import { FavoriteButton } from './favorite-button'
@@ -20,7 +20,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
   const property = await fetchPropertyById(id)
   const lat=property?.lat
   const lng=property?.lng
-  const allProperties = await fetchAllProperties()
+  const allProperties = await fetchAllActiveProperties()
 
   if (!property) {
     notFound()
@@ -116,7 +116,7 @@ export default async function PropertyDetailPage({ params }: PropertyDetailPageP
               </div>
               <div className="rounded-lg bg-muted p-4 text-center">
                 <p className="text-lg font-semibold text-primary">
-                  ${Math.round(property.price / property.size).toLocaleString()}
+                  ₹{Math.round(property.price / property.size).toLocaleString()}
                 </p>
                 <p className="text-xs text-muted-foreground">per {property.sizeUnit.slice(0, -1)}</p>
               </div>

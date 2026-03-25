@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { useAuth } from '@/lib/auth-context'
-import { fetchAllProperties } from '@/lib/data/properties'
+import { fetchAllActiveProperties } from '@/lib/data/properties'
 import { PropertyCard } from '@/components/property/property-card'
 import { Heart, MapPin, Plus, ArrowRight, Eye } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -24,7 +24,7 @@ export default function DashboardPage() {
     
     const fetchProperties = async () => {
       try {
-       await fetchAllProperties();
+       await fetchAllActiveProperties();
        setProperties(properties)
       } catch (error) {
         console.error("Error fetching:", error);
