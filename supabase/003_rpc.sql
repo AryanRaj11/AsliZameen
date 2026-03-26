@@ -1,18 +1,18 @@
-create or replace function search_land_by_location(
-  user_lat float, 
-  user_lng float, 
-  dist_meters float DEFAULT 20000 -- 20km default radius
+CREATE OR REPLACE FUNCTION get_nearby_properties(
+  user_lat FLOAT, 
+  user_lng FLOAT, 
+  radius_meters FLOAT DEFAULT 20000
 )
-returns setof properties
-language sql
-as $$
-  select *
-  from properties
-  where st_dwithin(
-    location, 
-    st_point(user_lng, user_lat)::geography, 
-    dist_meters
+RETURNS SETOF properties_with_coords -- Returns the view format with lat/lng included
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT *
+  FROM properties_with_coords
+  WHERE ST_DWithin(
+    location,
+    ST_SetSRID(ST_MakePoint(user_lng, user_lat), 4326)::geography,
+    radius_meters
   )
-  -- This sorts them so the closest land appears first
-  order by location <-> st_point(user_lng, user_lat)::geography;
+  ORDER BY location <-> ST_SetSRID(ST_MakePoint(user_lng, user_lat), 4326)::geography;
 $$;
