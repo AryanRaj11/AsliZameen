@@ -3,7 +3,6 @@
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import {
   Select,
   SelectContent,
@@ -13,7 +12,6 @@ import {
 } from '@/components/ui/select'
 import { Search } from 'lucide-react'
 import AutoComplete from '../google-maps-api/auto-complete'
-import { exit } from 'process'
 
 interface SearchFormProps {
   variant?: 'hero' | 'compact'
@@ -21,9 +19,10 @@ interface SearchFormProps {
     query?: string
     type?: string
   }
+  page?:string
 }
 
-export function SearchForm({ variant = 'compact', defaultValues }: SearchFormProps) {
+export function SearchForm({ variant = 'compact', defaultValues,page }: SearchFormProps) {
   const router = useRouter()
   const [query, setQuery] = useState(defaultValues?.query || '')
   const [type, setType] = useState(defaultValues?.type || '')
@@ -61,7 +60,7 @@ export function SearchForm({ variant = 'compact', defaultValues }: SearchFormPro
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex flex-col gap-3 rounded-xl bg-card p-4 shadow-lg sm:flex-row sm:items-end sm:gap-4">
         <AutoComplete onSelect={handleLocationSelect} defaultValue={query} />
-        <div className="w-full sm:w-48">
+       { page!='listings' && <div className="w-full sm:w-48">
           <label className="mb-1.5 block text-sm font-medium text-card-foreground">
             Land Type
           </label>
@@ -76,7 +75,7 @@ export function SearchForm({ variant = 'compact', defaultValues }: SearchFormPro
               <SelectItem value="commercial">Commercial</SelectItem>
             </SelectContent>
           </Select>
-        </div>
+        </div> }
 
         <Button type="submit" size="lg" className="w-full sm:w-auto">
           <Search className="mr-2 h-4 w-4" />
