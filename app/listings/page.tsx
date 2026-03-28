@@ -1,9 +1,8 @@
 import { Suspense } from 'react'
-import { Input } from '@/components/ui/input'
 import { PropertyGrid } from '@/components/property/property-grid'
 import { PropertyFilters } from '@/components/property/property-filters'
 import { filterProperties } from '@/lib/data/properties'
-import { Search } from 'lucide-react'
+import { SearchForm } from '@/components/forms/search-form'
 
  interface ListingsPageProps {
   searchParams: Promise<{
@@ -123,7 +122,7 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
         </p>
 
         {/* Search Bar */}
-        <form action="/listings" method="get" className="mt-4 max-w-md">
+        {/* <form action="/listings" method="get" className="mt-4 max-w-md">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
@@ -133,7 +132,10 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
               className="pl-9"
             />
           </div>
-        </form>
+        </form> */}
+        <div className="flex w-full max-w-xl mr-auto items-center gap-4">
+        <SearchForm page='listings'></SearchForm>
+        </div>
       </div>
 
       <Suspense fallback={
