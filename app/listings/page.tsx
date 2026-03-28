@@ -2,10 +2,10 @@ import { Suspense } from 'react'
 import { Input } from '@/components/ui/input'
 import { PropertyGrid } from '@/components/property/property-grid'
 import { PropertyFilters } from '@/components/property/property-filters'
-import { fetchAllActiveProperties } from '@/lib/data/properties'
+import { filterProperties } from '@/lib/data/properties'
 import { Search } from 'lucide-react'
 
-interface ListingsPageProps {
+ interface ListingsPageProps {
   searchParams: Promise<{
     q?: string
     type?: string
@@ -14,64 +14,80 @@ interface ListingsPageProps {
     priceMax?: string
     sizeMin?: string
     sizeMax?: string
+    lat?:Number
+    lng?:Number
+    landTypes?:string[]
   }>
 }
 
 async function ListingsContent({ searchParams }: ListingsPageProps) {
   const params = await searchParams
-  const allProperties = await fetchAllActiveProperties()
+  let filteredProperties = await filterProperties(params)
+  
 
-  // Filter properties based on search params
-  let filteredProperties = [...allProperties].filter(p => p.status === 'active')
+  if(!filteredProperties){filteredProperties = []}
+
+  //Filter properties based on search params
+  
+  // let nearbyProperties:Property[] = []
+  // if(params.lat && params.lng){
+  //  nearbyProperties = await fetchNearby(params.lat,params.lng);
+  // console.log('length')
+  // console.log(JSON.stringify(nearbyProperties.length));
+  // }
+  
 
   // Text search
-  if (params.q) {
-    const query = params.q.toLowerCase()
-    filteredProperties = filteredProperties.filter(p => 
-      p.title.toLowerCase().includes(query) ||
-      p.description.toLowerCase().includes(query) ||
-      p.city.toLowerCase().includes(query) ||
-      p.state.toLowerCase().includes(query)
-    )
-  }
+  // if (params.q) {
+  //   const query = params.q.toLowerCase()
+  //   filteredProperties = filteredProperties.filter(p => 
+  //     p.title.toLowerCase().includes(query) ||
+  //     p.description.toLowerCase().includes(query) ||
+  //     p.city.toLowerCase().includes(query) ||
+  //     p.state.toLowerCase().includes(query)
+  //   )
+  // }
 
-  // Type filter
-  if (params.type) {
-    const types = params.type.split(',')
-    filteredProperties = filteredProperties.filter(p => types.includes(p.landType))
-  }
+  // // Type filter
+  // if (params.type) {
+  //   const types = params.type.split(',')
+  //   filteredProperties = filteredProperties.filter(p => types.includes(p.landType))
+  // }
 
-  // Price filter
-  if (params.priceMin) {
-    filteredProperties = filteredProperties.filter(p => p.price >= Number(params.priceMin))
-  }
-  if (params.priceMax) {
-    filteredProperties = filteredProperties.filter(p => p.price <= Number(params.priceMax))
-  }
+  // // Price filter
+  // if (params.priceMin) {
+  //   filteredProperties = filteredProperties.filter(p => p.price >= Number(params.priceMin))
+  // }
+  // if (params.priceMax) {
+  //   filteredProperties = filteredProperties.filter(p => p.price <= Number(params.priceMax))
+  // }
 
-  // Size filter
-  if (params.sizeMin) {
-    filteredProperties = filteredProperties.filter(p => p.size >= Number(params.sizeMin))
-  }
-  if (params.sizeMax) {
-    filteredProperties = filteredProperties.filter(p => p.size <= Number(params.sizeMax))
-  }
+  // // Size filter
+  // if (params.sizeMin) {
+  //   filteredProperties = filteredProperties.filter(p => p.size >= Number(params.sizeMin))
+  // }
+  // if (params.sizeMax) {
+  //   filteredProperties = filteredProperties.filter(p => p.size <= Number(params.sizeMax))
+  // }
+  // if(params.lat && params.lng){
+  //   filteredProperties = nearbyProperties
+  // }
 
   // Sort
-  switch (params.sort) {
-    case 'price-asc':
-      filteredProperties.sort((a, b) => a.price - b.price)
-      break
-    case 'price-desc':
-      filteredProperties.sort((a, b) => b.price - a.price)
-      break
-    case 'size-desc':
-      filteredProperties.sort((a, b) => b.size - a.size)
-      break
-    case 'date-desc':
-    default:
-      filteredProperties.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  }
+  // switch (params.sort) {
+  //   case 'price-asc':
+  //     filteredProperties.sort((a, b) => a.price - b.price)
+  //     break
+  //   case 'price-desc':
+  //     filteredProperties.sort((a, b) => b.price - a.price)
+  //     break
+  //   case 'size-desc':
+  //     filteredProperties.sort((a, b) => b.size - a.size)
+  //     break
+  //   case 'date-desc':
+  //   default:
+  //     filteredProperties.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  // }
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">

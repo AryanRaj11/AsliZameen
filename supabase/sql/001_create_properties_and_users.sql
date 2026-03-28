@@ -29,8 +29,10 @@ CREATE TABLE IF NOT EXISTS public.properties (
     images      text[]      NOT NULL DEFAULT '{}',
     land_papers text[]      NOT NULL DEFAULT '{}',
     seller_id   uuid        NOT NULL,
+    location     geography(POINT, 4326),
     created_at  timestamptz NOT NULL DEFAULT now(),
     status      text        NOT NULL DEFAULT 'active' 
+    
         CHECK (status IN ('active', 'pending', 'sold')),
 
     -- Define the Foreign Key constraint inside the table creation
@@ -48,12 +50,9 @@ CREATE INDEX IF NOT EXISTS idx_properties_status ON public.properties(status);
 
 CREATE EXTENSION IF NOT EXISTS postgis;
 
--- Add the location column to your properties table
-ALTER TABLE properties 
-ADD COLUMN location geography(POINT, 4326);
 
 -- Create a spatial index (Crucial for speed!)
-CREATE INDEX properties_geo_index ON properties USING GIST (location);
+CREATE INDEX IF NOT EXISTS properties_geo_index ON properties USING GIST (location);
 
 -- need to this because location is stored in a particular format which cannnot be used directly,
 -- so creating a view of the tablw with required columns

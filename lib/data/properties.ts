@@ -1,5 +1,6 @@
 import { Property, LandType, User } from '@/lib/types'
 import { supabase } from '@/lib/supabase-client'
+import { ListingsPageProps } from '@/app/listings/page'
 
 
 
@@ -47,6 +48,18 @@ export async function searchProperties(query: string): Promise<Property[]> {
   if (error) return []
   return data as Property[]
 }
+
+export const fetchNearby = async (lat:Number, long:Number) => {
+  console.log(`lat ${lat} lng ${long}`)
+  const { data, error } = await supabase.rpc('get_nearby_properties', {
+    user_lat: lat,
+    user_lng: long,
+    radius_meters: 200000000 // You can change this dynamically
+  });
+
+  if (error) {console.error(error);return []}
+  else  return data as Property[]
+};
 
 
 type PropertyRow = {
@@ -145,6 +158,38 @@ export async function fetchFeaturedProperties(count: number = 6): Promise<Proper
 }
 
 
+
+export const uploadImages = async (files: FileList) => {
+  if (!supabase) {
+    return []
+  }
+  const uploadedUrls = [];
+
+  try {
+
+    for (const file of files) {
+      // Create a unique file name to avoid overwriting
+      const fileExt = file.name.split('.').pop();
+      const fileName = `${Math.random()}.${fileExt}`;
+      const filePath = `${fileName}`;
+
+      const { data, error } = await supabase.storage
+        .from('properties_image')
+        .upload(filePath, file);
+      // Get the Public URL
+      const { data: { publicUrl } } = supabase.storage
+        .from('properties_image')
+        .getPublicUrl(filePath);
+
+      uploadedUrls.push(publicUrl);
+    }
+    return uploadedUrls;
+  }
+  catch (err) {
+    throw new Error("error in uploading to db");
+  }
+};
+
 export const saveProperty = async (Property_Info: Property): Promise<Boolean> => {
   if (!supabase) {
     return false
@@ -187,35 +232,43 @@ export const saveProperty = async (Property_Info: Property): Promise<Boolean> =>
   }
 };
 
-export const uploadImages = async (files: FileList) => {
+export interface filterParams {
+    q?: string
+    type?: string
+    sort?: string
+    priceMin?: string
+    priceMax?: string
+    sizeMin?: string
+    sizeMax?: string
+    lat?:Number
+    lng?:Number
+    landTypes?:string[]
+}
+
+export const filterProperties = async (params : filterParams) => {
   if (!supabase) {
     return []
   }
-  const uploadedUrls = [];
+  const landTypes = params.type ? params.type.split(',') : null;
 
-  try {
-
-    for (const file of files) {
-      // Create a unique file name to avoid overwriting
-      const fileExt = file.name.split('.').pop();
-      const fileName = `${Math.random()}.${fileExt}`;
-      const filePath = `${fileName}`;
-
-      const { data, error } = await supabase.storage
-        .from('properties_image')
-        .upload(filePath, file);
-      // Get the Public URL
-      const { data: { publicUrl } } = supabase.storage
-        .from('properties_image')
-        .getPublicUrl(filePath);
-
-      uploadedUrls.push(publicUrl);
-    }
-    return uploadedUrls;
+    const { data, error } = await supabase.rpc('filter_properties', {
+      user_lat: params.lat ? Number(params.lat) : null,
+      user_lng: params.lng ? Number(params.lng) : null,
+      radius_meters: 200000, // 20km
+      min_price: params.priceMin ? Number(params.priceMin) : null,
+      max_price: params.priceMax ? Number(params.priceMax) : null,
+      land_types:landTypes,
+      min_size: params.sizeMin ? Number(params.sizeMin) : null,
+    });
+  
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error fetching filtered properties from Supabase', error)
+    return null
   }
-  catch (err) {
-    throw new Error("error in uploading to db");
-  }
+  if (!data) return null
+
+  return (data as PropertyRow[]).map(mapRowToProperty)
 };
 
 export const uploadLandPapers = async (files: FileList) => {
