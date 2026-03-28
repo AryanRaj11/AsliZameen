@@ -4,14 +4,16 @@ import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { 
-  Select, 
-  SelectContent, 
-  SelectItem, 
-  SelectTrigger, 
-  SelectValue 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
 } from '@/components/ui/select'
 import { Search } from 'lucide-react'
+import AutoComplete from '../google-maps-api/auto-complete'
+import { exit } from 'process'
 
 interface SearchFormProps {
   variant?: 'hero' | 'compact'
@@ -21,59 +23,44 @@ interface SearchFormProps {
   }
 }
 
-export function SearchForm({ variant = 'hero', defaultValues }: SearchFormProps) {
+export function SearchForm({ variant = 'compact', defaultValues }: SearchFormProps) {
   const router = useRouter()
   const [query, setQuery] = useState(defaultValues?.query || '')
   const [type, setType] = useState(defaultValues?.type || '')
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    
-    const params = new URLSearchParams()
-    if (query) params.set('q', query)
-    if (type) params.set('type', type)
-    
-    router.push(`/listings${params.toString() ? `?${params.toString()}` : ''}`)
-  }
+  // Inside SearchForm.tsx
+  const [coords, setCoords] = useState<{ lat: number; lng: number } | null>(null);
 
-  if (variant === 'compact') {
-    return (
-      <form onSubmit={handleSubmit} className="flex items-center gap-2">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search location, property type..."
-            value={query}
-            onChange={(e) => setQuery(e.target.value)}
-            className="pl-9"
-          />
-        </div>
-        <Button type="submit" size="icon">
-          <Search className="h-4 w-4" />
-          <span className="sr-only">Search</span>
-        </Button>
-      </form>
-    )
-  }
+  const handleLocationSelect = (data: { address: string; lat: number; lng: number }) => {
+    setQuery(data.address);
+    setCoords({ lat: data.lat, lng: data.lng });
+  };
+
+  // ... in your handleSubmit ...
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (!params) {
+      alert("please enter details")
+      e.preventDefault()
+    }
+
+    if (query) params.set('q', query);
+    if (type) params.set('type', type);
+
+    // Add the hidden coordinates to the URL!
+    if (coords) {
+      params.set('lat', coords.lat.toString());
+      params.set('lng', coords.lng.toString());
+    }
+
+    router.push(`/listings?${params.toString()}`);
+  };
 
   return (
     <form onSubmit={handleSubmit} className="w-full">
       <div className="flex flex-col gap-3 rounded-xl bg-card p-4 shadow-lg sm:flex-row sm:items-end sm:gap-4">
-        <div className="flex-1">
-          <label className="mb-1.5 block text-sm font-medium text-card-foreground">
-            Location or Keyword
-          </label>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              placeholder="Area,City or state..."
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="pl-9"
-            />
-          </div>
-        </div>
-
+        <AutoComplete onSelect={handleLocationSelect} defaultValue={query} />
         <div className="w-full sm:w-48">
           <label className="mb-1.5 block text-sm font-medium text-card-foreground">
             Land Type
