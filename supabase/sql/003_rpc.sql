@@ -23,8 +23,11 @@ CREATE OR REPLACE FUNCTION filter_properties(
   radius_meters FLOAT DEFAULT 20000,
   min_price NUMERIC DEFAULT NULL,
   max_price NUMERIC DEFAULT NULL,
-  land_types TEXT[] DEFAULT NULL, -- Pass as an array like ['agricultural', 'residential']
-  min_size NUMERIC DEFAULT NULL
+  land_types TEXT[] DEFAULT NULL,
+  min_size NUMERIC DEFAULT NULL,
+  -- New parameters for Pagination
+  limit_val INT DEFAULT 12,
+  offset_val INT DEFAULT 0
 )
 RETURNS SETOF properties_with_coords
 LANGUAGE sql
@@ -33,22 +36,25 @@ AS $$
   SELECT *
   FROM properties_with_coords
   WHERE 
-    -- 1. Location Filter (Only if lat/lng are provided)
+    -- 1. Location Filter
     (user_lat IS NULL OR user_lng IS NULL OR ST_DWithin(location, ST_SetSRID(ST_MakePoint(user_lng, user_lat), 4326)::geography, radius_meters))
     -- 2. Price Filter
     AND (min_price IS NULL OR price >= min_price)
     AND (max_price IS NULL OR price <= max_price)
-    -- 3. Land Type Filter (Checks if land_type is in the provided array)
+    -- 3. Land Type Filter
     AND (land_types IS NULL OR land_type = ANY(land_types))
     -- 4. Size Filter
     AND (min_size IS NULL OR size >= min_size)
-    -- 5. Always ensure status is active
+    -- 5. Status Filter
     AND status = 'active'
   ORDER BY 
-    CASE 
-      WHEN user_lat IS NOT NULL AND user_lng IS NOT NULL 
-      THEN (location <-> ST_SetSRID(ST_MakePoint(user_lng, user_lat), 4326)::geography)
-      ELSE NULL 
-    END ASC,
-    created_at DESC;
+    -- Sort by distance if location is provided, otherwise skip this sort
+    (CASE WHEN user_lat IS NOT NULL AND user_lng IS NOT NULL 
+          THEN location <-> ST_SetSRID(ST_MakePoint(user_lng, user_lat), 4326)::geography 
+          ELSE NULL END) ASC NULLS LAST,
+    -- Always sort by newest first as a secondary/default sort
+    created_at DESC
+  -- Apply Pagination
+  LIMIT limit_val
+  OFFSET offset_val;
 $$;
