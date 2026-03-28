@@ -33,7 +33,7 @@ const howItWorks = [
 ]
 
 export default async function HomePage() {
-  const featuredProperties = await fetchFeaturedProperties(6)
+  const featuredProperties = await fetchFeaturedProperties(8)
 
   return (
     <div className="flex flex-col">
@@ -139,7 +139,7 @@ export default async function HomePage() {
           </div>
 
           <div className="mt-10">
-            <PropertyGrid properties={featuredProperties} />
+            <PropertyGrid properties={featuredProperties} gridColumns={4}/>
           </div>
         </div>
       </section>
