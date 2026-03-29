@@ -1,10 +1,10 @@
 import { Suspense } from 'react'
-import { PropertyGrid } from '@/components/property/property-grid'
 import { PropertyFilters } from '@/components/property/property-filters'
-import { filterProperties } from '@/lib/data/properties'
+import { filterProperties } from '@/lib/data/server-functions'
 import { SearchForm } from '@/components/forms/search-form'
+import  PropertyFeed  from './property-feed'
 
- interface ListingsPageProps {
+interface ListingsPageProps {
   searchParams: Promise<{
     q?: string
     type?: string
@@ -13,28 +13,26 @@ import { SearchForm } from '@/components/forms/search-form'
     priceMax?: string
     sizeMin?: string
     sizeMax?: string
-    lat?:Number
-    lng?:Number
-    landTypes?:string[]
+    lat?: number
+    lng?: number
   }>
 }
 
-async function ListingsContent({ searchParams }: ListingsPageProps) {
-  const params = await searchParams
-  let filteredProperties = await filterProperties(params)
+// ListingsContent.tsx (Server Component)
+async function ListingsContent({ searchParams }: { searchParams: any }) {
+  const params = await searchParams;
   
+  // Fetch initial data (Page 1)
+  const result = await filterProperties({ 
+    ...params, 
+    limit: 12, 
+    offset: 0 
+  });
 
-  if(!filteredProperties){filteredProperties = []}
-
-  //Filter properties based on search params
-  
-  // let nearbyProperties:Property[] = []
-  // if(params.lat && params.lng){
-  //  nearbyProperties = await fetchNearby(params.lat,params.lng);
-  // console.log('length')
-  // console.log(JSON.stringify(nearbyProperties.length));
-  // }
-  
+  // CRITICAL: result is now { mappedProperties, totalCount }
+  // We extract them safely here
+  const properties = result?.mappedProperties || [];
+  const totalCount = result?.totalCount || 0;
 
   // Text search
   // if (params.q) {
@@ -72,33 +70,33 @@ async function ListingsContent({ searchParams }: ListingsPageProps) {
   //   filteredProperties = nearbyProperties
   // }
 
-  // Sort
-  // switch (params.sort) {
-  //   case 'price-asc':
-  //     filteredProperties.sort((a, b) => a.price - b.price)
-  //     break
-  //   case 'price-desc':
-  //     filteredProperties.sort((a, b) => b.price - a.price)
-  //     break
-  //   case 'size-desc':
-  //     filteredProperties.sort((a, b) => b.size - a.size)
-  //     break
-  //   case 'date-desc':
-  //   default:
-  //     filteredProperties.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
-  // }
+//Sort
+  switch (params.sort) {
+    case 'price-asc':
+      properties.sort((a, b) => a.price - b.price)
+      break
+    case 'price-desc':
+      properties.sort((a, b) => b.price - a.price)
+      break
+    case 'size-desc':
+      properties.sort((a, b) => b.size - a.size)
+      break
+    case 'date-desc':
+    default:
+      properties.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+  }
 
   return (
     <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-      <PropertyFilters totalCount={filteredProperties.length} />
-      <div className="flex-1">
-        <PropertyGrid 
-          properties={filteredProperties} 
-          emptyMessage="No properties match your filters. Try adjusting your search criteria."
-        />
-      </div>
+      <PropertyFilters totalCount={totalCount} />
+      
+      <PropertyFeed 
+        initialProperties={properties} 
+        searchParams={params} 
+        totalCount={totalCount}
+      />
     </div>
-  )
+  );
 }
 
 export default async function ListingsPage({ searchParams }: ListingsPageProps) {
@@ -106,35 +104,21 @@ export default async function ListingsPage({ searchParams }: ListingsPageProps) 
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-      {/* Header */}
+      {/* Header - EXACTLY AS PER OLD STYLE */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-foreground">
           {params.type 
             ? `${params.type.charAt(0).toUpperCase() + params.type.slice(1)} Land`
-            : 'Browse All Land'
-          }
+            : 'Browse All Land'}
         </h1>
         <p className="mt-2 text-muted-foreground">
           {params.q 
             ? `Search results for "${params.q}"`
-            : 'Discover your perfect piece of land'
-          }
+            : 'Discover your perfect piece of land'}
         </p>
 
-        {/* Search Bar */}
-        {/* <form action="/listings" method="get" className="mt-4 max-w-md">
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-            <Input
-              name="q"
-              placeholder="Search by location or keyword..."
-              defaultValue={params.q}
-              className="pl-9"
-            />
-          </div>
-        </form> */}
-        <div className="flex w-full max-w-xl mr-auto items-center gap-4">
-        <SearchForm page='listings'></SearchForm>
+        <div className="flex w-full max-w-xl mr-auto items-center gap-4 mt-4">
+          <SearchForm page='listings'></SearchForm>
         </div>
       </div>
 

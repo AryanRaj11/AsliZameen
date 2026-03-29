@@ -1,7 +1,6 @@
+
 import { Property, LandType, User } from '@/lib/types'
 import { supabase } from '@/lib/supabase-client'
-import { ListingsPageProps } from '@/app/listings/page'
-
 
 
 
@@ -62,7 +61,7 @@ export const fetchNearby = async (lat:Number, long:Number) => {
 };
 
 
-type PropertyRow = {
+export type PropertyRow = {
   id: string
   title: string
   description: string
@@ -85,7 +84,7 @@ type PropertyRow = {
   land_papers:string[]
 }
 
-function mapRowToProperty(row: PropertyRow): Property {
+export function mapRowToProperty(row: PropertyRow): Property {
   return {
     id: row.id,
     title: row.title,
@@ -232,44 +231,7 @@ export const saveProperty = async (Property_Info: Property): Promise<Boolean> =>
   }
 };
 
-export interface filterParams {
-    q?: string
-    type?: string
-    sort?: string
-    priceMin?: string
-    priceMax?: string
-    sizeMin?: string
-    sizeMax?: string
-    lat?:Number
-    lng?:Number
-    landTypes?:string[]
-}
 
-export const filterProperties = async (params : filterParams) => {
-  if (!supabase) {
-    return []
-  }
-  const landTypes = params.type ? params.type.split(',') : null;
-
-    const { data, error } = await supabase.rpc('filter_properties', {
-      user_lat: params.lat ? Number(params.lat) : null,
-      user_lng: params.lng ? Number(params.lng) : null,
-      radius_meters: 200000, // 20km
-      min_price: params.priceMin ? Number(params.priceMin) : null,
-      max_price: params.priceMax ? Number(params.priceMax) : null,
-      land_types:landTypes,
-      min_size: params.sizeMin ? Number(params.sizeMin) : null,
-    });
-  
-  if (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error fetching filtered properties from Supabase', error)
-    return null
-  }
-  if (!data) return null
-
-  return (data as PropertyRow[]).map(mapRowToProperty)
-};
 
 export const uploadLandPapers = async (files: FileList) => {
   if (!supabase) {
@@ -356,3 +318,4 @@ export async function registerUser(name: String,
     return false;
   }
 }
+
