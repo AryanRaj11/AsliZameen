@@ -12,7 +12,7 @@ import {
   DropdownMenuTrigger
 } from '@/components/ui/dropdown-menu'
 import { useAuth } from '@/lib/auth-context'
-import { getFeaturedProperties } from '@/lib/data/properties'
+import { getPropertiesBySeller } from '@/lib/data/properties'
 import { LAND_TYPE_LABELS, Property } from '@/lib/types'
 import { Plus, MoreVertical, Edit, Eye, Trash2, MapPin } from 'lucide-react'
 import { useEffect, useState } from 'react'
@@ -24,7 +24,7 @@ export default function MyListingsPage() {
 
   useEffect(() => {
     const getProperties = async () => {
-      const result = await getFeaturedProperties();
+      const result = await getPropertiesBySeller(user.id);
       setProperties(result);
       console.log('properties')
       console.log(user.id)
@@ -35,7 +35,7 @@ export default function MyListingsPage() {
 
   if (!user) return null
 
-  const canSell = user.role === 'seller' || user.role === 'both'
+  const canSell = user.role === 'seller' || user.role === 'admin'
 
   if (!canSell) {
     return (
@@ -134,7 +134,7 @@ export default function MyListingsPage() {
                       </Link>
                     </Button>
                     <Button variant="outline" size="sm" asChild>
-                      <Link href={`/dashboard/edit/${property.id}`}>
+                      <Link href={`/dashboard/edit-listings/${property.id}`}>
                         <Edit className="mr-2 h-4 w-4" />
                         Edit
                       </Link>

@@ -1,11 +1,12 @@
+
 import { Property, LandType, User } from '@/lib/types'
 import { supabase } from '@/lib/supabase-client'
-import { ListingsPageProps } from '@/app/listings/page'
-
 
 
 
 export async function getFeaturedProperties(count: number = 6): Promise<Property[]> {
+  if(!supabase)
+  {return []}
   const { data, error } = await supabase
     .from('properties')
     .select('*')
@@ -16,6 +17,8 @@ export async function getFeaturedProperties(count: number = 6): Promise<Property
 }
 
 export async function getPropertiesByType(type: string): Promise<Property[]> {
+  if(!supabase)
+    {return []}
   const { data, error } = await supabase
     .from('properties')
     .select('*')
@@ -27,16 +30,20 @@ export async function getPropertiesByType(type: string): Promise<Property[]> {
 }
 
 export async function getPropertiesBySeller(sellerId: string): Promise<Property[]> {
+  if(!supabase)
+    {return []}
   const { data, error } = await supabase
     .from('properties')
     .select('*')
-    .eq('sellerId', sellerId)
+    .eq('seller_id', sellerId)
 
   if (error) return []
   return data as Property[]
 }
 
 export async function searchProperties(query: string): Promise<Property[]> {
+  if(!supabase)
+    {return []}
   const searchTerm = `%${query}%`
 
   const { data, error } = await supabase
@@ -50,6 +57,8 @@ export async function searchProperties(query: string): Promise<Property[]> {
 }
 
 export const fetchNearby = async (lat:Number, long:Number) => {
+  if(!supabase)
+    {return []}
   console.log(`lat ${lat} lng ${long}`)
   const { data, error } = await supabase.rpc('get_nearby_properties', {
     user_lat: lat,
@@ -62,7 +71,7 @@ export const fetchNearby = async (lat:Number, long:Number) => {
 };
 
 
-type PropertyRow = {
+export type PropertyRow = {
   id: string
   title: string
   description: string
@@ -85,7 +94,7 @@ type PropertyRow = {
   land_papers:string[]
 }
 
-function mapRowToProperty(row: PropertyRow): Property {
+export function mapRowToProperty(row: PropertyRow): Property {
   return {
     id: row.id,
     title: row.title,
@@ -226,50 +235,20 @@ export const saveProperty = async (Property_Info: Property): Promise<Boolean> =>
 
     console.log('Property saved successfully:', data);
     return true;
-  } catch (error) {
-    console.error('Error saving property:', error?.message);
-    return false;
-  }
-};
-
-export interface filterParams {
-    q?: string
-    type?: string
-    sort?: string
-    priceMin?: string
-    priceMax?: string
-    sizeMin?: string
-    sizeMax?: string
-    lat?:Number
-    lng?:Number
-    landTypes?:string[]
-}
-
-export const filterProperties = async (params : filterParams) => {
-  if (!supabase) {
-    return []
-  }
-  const landTypes = params.type ? params.type.split(',') : null;
-
-    const { data, error } = await supabase.rpc('filter_properties', {
-      user_lat: params.lat ? Number(params.lat) : null,
-      user_lng: params.lng ? Number(params.lng) : null,
-      radius_meters: 200000, // 20km
-      min_price: params.priceMin ? Number(params.priceMin) : null,
-      max_price: params.priceMax ? Number(params.priceMax) : null,
-      land_types:landTypes,
-      min_size: params.sizeMin ? Number(params.sizeMin) : null,
-    });
+  } catch (error: unknown) {
+    // Use a type guard to check if it's a standard Error object
+    if (error instanceof Error) {
+      console.error('Error saving Property:', error.message);
+      throw new Error(error.message);
+    }
   
-  if (error) {
-    // eslint-disable-next-line no-console
-    console.error('Error fetching filtered properties from Supabase', error)
-    return null
+    // Handle cases where something else was thrown (rare but possible)
+    console.error('An unknown error occurred:', error);
+    throw new Error('An unexpected error occurred while saving property');
   }
-  if (!data) return null
-
-  return (data as PropertyRow[]).map(mapRowToProperty)
 };
+
+
 
 export const uploadLandPapers = async (files: FileList) => {
   if (!supabase) {
@@ -350,9 +329,24 @@ export async function registerUser(name: String,
 
     console.log('User Details saved successfully:', data);
     return true;
-  } catch (error) {
-    console.error('Error saving User Details:', error?.message);
-    throw new Error(error);
-    return false;
+  } catch (error: unknown) {
+    // Use a type guard to check if it's a standard Error object
+    if (error instanceof Error) {
+      console.error('Error saving User Details:', error.message);
+      throw new Error(error.message);
+    }
+    console.error('An unknown error occurred:', error);
+    throw new Error('An unexpected error occurred while saving user details.');
   }
 }
+
+export async function updateProperty(id: string, updates : any) {
+  if(!supabase)
+    {return []}
+  const { error } = await supabase
+    .from('properties')
+    .update(updates)
+    .eq('id', id);
+  if (error) throw error;
+}
+
