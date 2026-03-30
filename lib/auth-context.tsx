@@ -16,6 +16,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     // Helper to fetch the DB profile
     const getProfile = async (authUserId: string, email: string) => {
+      if(!supabase){return}
       const { data } = await supabase
         .from('users')
         .select('*')
@@ -26,6 +27,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const initialize = async () => {
       try {
+        if(!supabase){return}
         const { data: { session } } = await supabase.auth.getSession();
         if (isMounted && session?.user) {
           const profile = await getProfile(session.user.id, session.user.email!);
@@ -38,8 +40,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    initialize();
-
+    initialize();  
+    if(!supabase){return}
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (event, session) => {
       if (!isMounted) return;
 
@@ -60,7 +62,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           getProfile(session.user.id, session.user.email!).then(profile => {
             if (isMounted) setUser(profile || session.user);
           });
-
+          console.log(`current user : ${JSON.stringify(currentUser)}`)
           return currentUser; // Keep old user while fetching new profile
         });
       }
@@ -81,7 +83,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       : [...favorites, propertyId]
 
     setFavorites(updated)
-
+    
+    if(!supabase){return}
     // Optional: Save back to Supabase metadata
     await supabase.auth.updateUser({
       data: { favorites: updated }
@@ -90,10 +93,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const isFavorite = (propertyId: string) => favorites.includes(propertyId)
 
+
+  const logout = () => {if(!supabase){return} supabase.auth.signOut()}
   const value = {
     user,
     loading,
-    logout: () => supabase.auth.signOut(),
+    logout: () => logout(),
     isFavorite,
     toggleFavorite,
     role: user?.role || 'buyer'
