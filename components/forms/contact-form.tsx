@@ -2,14 +2,12 @@
 
 import { useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Textarea } from '@/components/ui/textarea'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
-import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { useAuth } from '@/lib/auth-context'
 import { Property } from '@/lib/types'
 import { getUserById } from '@/lib/data/users'
 import { Send, Phone, Mail, CheckCircle } from 'lucide-react'
+import Link from 'next/link'
 import { User } from '@/lib/types'
 
 interface ContactFormProps {
@@ -84,6 +82,15 @@ export function ContactForm({ property }: ContactFormProps) {
 
   return (
     <div className="flex flex-col gap-6">
+     { !user && (
+  <Link href="/login" className="w-full block"> 
+    <Button 
+      className="w-full bg-red-400 animate-pulse text-white py-6 text-md font-bold shadow-md"
+    >
+      Login to view Details
+    </Button>
+  </Link>
+)}
       <Card>
         <CardHeader>
           <CardTitle>Contact Seller</CardTitle>
@@ -153,6 +160,6 @@ export function ContactForm({ property }: ContactFormProps) {
           </div>
         </CardContent>
       </Card>
-      </div>
+    </div>
   )
 }
