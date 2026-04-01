@@ -6,7 +6,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { useAuth } from '@/lib/auth-context'
 import { Property } from '@/lib/types'
 import { getUserById } from '@/lib/data/users'
-import { Send, Phone, Mail, CheckCircle } from 'lucide-react'
+import { Send, FileText, Mail, CheckCircle, FileCheck } from 'lucide-react'
 import Link from 'next/link'
 import { User } from '@/lib/types'
 
@@ -143,23 +143,62 @@ export function ContactForm({ property }: ContactFormProps) {
           </form>
         </CardContent>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Land Papers</CardTitle>
-          <CardDescription>
-            Send a message to {seller?.name || 'the seller'} about this property
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-6 flex items-center gap-4 rounded-lg bg-muted p-4">
-            Lagaan Reciept
-            {/* <div className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-          
-            </div> */}
-          </div>
-        </CardContent>
-      </Card>
+{/* Land Documents Section */}
+<Card className=" overflow-hidden border-blue-100 shadow-sm">
+  <CardHeader className="bg-slate-50 border-b">
+    <CardTitle className="flex items-center gap-2 text-lg">
+      <FileText className="h-5 w-5 text-blue-600" />
+      Verified Land Documents
+    </CardTitle>
+    <CardDescription>
+      Official records provided by the seller and verified by our team.
+    </CardDescription>
+  </CardHeader>
+  <CardContent className="p-6">
+    {!user ? (
+      <div className="text-center py-4">
+        <p className="text-sm text-muted-foreground mb-4">
+          Legal documents are hidden for privacy.
+        </p>
+        {/* Your glowing Login button from earlier goes here */}
+        <Link href="/login" className="w-full block">
+           {/* <Button className="w-full bg-red-400 animate-pulse text-white">
+             Login to View Documents
+           </Button> */}
+        </Link>
+      </div>
+    ) : (
+      <div className="grid gap-3">
+        {property.land_papers && property.land_papers.length > 0 ? (
+          property.land_papers.map((url, index) => (
+            <a 
+              key={index}
+              href={url} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center justify-between p-3 rounded-lg border bg-white hover:bg-blue-50 hover:border-blue-200 transition-all group"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-blue-100 rounded text-blue-700">
+                   <FileCheck className="h-5 w-5" />
+                </div>
+                <div>
+                  <p className="text-sm font-medium">Verified Document {index + 1}</p>
+                  <p className="text-xs text-muted-foreground uppercase">PDF / IMAGE</p>
+                </div>
+              </div>
+              <Button variant="ghost" size="sm" className="group-hover:text-blue-600">
+                View/Download
+              </Button>
+            </a>
+          ))
+        ) : (
+          <p className="text-sm text-slate-500 italic">No documents uploaded for this property.</p>
+        )}
+      </div>
+    )}
+  </CardContent>
+</Card> 
     </div>
   )
 }

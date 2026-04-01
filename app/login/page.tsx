@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
@@ -9,8 +9,9 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { FieldGroup, Field, FieldLabel } from '@/components/ui/field'
 import { Alert, AlertDescription } from '@/components/ui/alert'
 import { useAuth } from '@/lib/auth-context'
-import { MapPin, AlertCircle } from 'lucide-react'
-import { googleSignIn } from '@/lib/data/properties'
+import { MapPin, AlertCircle, CheckCircle2 } from 'lucide-react'
+import { googleSignIn } from '@/lib/data/properties' // Ensure checkUserExists is exported
+import { getUserByEmail } from '@/lib/data/users'
 
 export default function LoginPage() {
   const router = useRouter()
@@ -22,6 +23,29 @@ export default function LoginPage() {
   })
   const [error, setError] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+  
+  // New States for the "Gatekeeper" flow
+  const [isRegistered, setIsRegistered] = useState(false)
+  const [isVerifying, setIsVerifying] = useState(false)
+
+  // Debounced Email Verification
+  useEffect(() => {
+    const timer = setTimeout(async () => {
+      if (formData.email && formData.email.includes('@')) {
+        setIsVerifying(true)
+        const exists = await getUserByEmail(formData.email)
+        setIsRegistered(!!exists)
+        setIsVerifying(false)
+        if (!exists && formData.email.length > 5) {
+          setError('Email not found. Please register first.')
+        } else {
+          setError('')
+        }
+      }
+    }, 600) // 600ms debounce
+
+    return () => clearTimeout(timer)
+  }, [formData.email])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -41,16 +65,16 @@ export default function LoginPage() {
 
   const handlelogin = async(e:React.FormEvent)=>{
     e.preventDefault()
+    if (!isRegistered) return; // Final guard
+
     setError('')
-
     setIsLoading(true)
-
     const signin = await googleSignIn();
-
-    console.log("signin successfull");
-
-    setIsLoading(false)
     
+    if (signin) {
+      router.push('/dashboard')
+    }
+    setIsLoading(false)
   }
 
   return (
@@ -62,10 +86,8 @@ export default function LoginPage() {
           </div>
           <CardTitle className="text-2xl">Welcome Back</CardTitle>
           <CardDescription>
-            Sign in to your AsliZameen account
+            Enter your email to unlock login options
           </CardDescription>
-          <Button onClick={handlelogin}>Log in via Google</Button>
-          <h1>OR</h1>
         </CardHeader>
 
         <CardContent>
@@ -76,56 +98,70 @@ export default function LoginPage() {
             </Alert>
           )} 
           
-          <form onSubmit={handleSubmit}>
-            <FieldGroup>
-              <Field>
-                <FieldLabel>Email Address</FieldLabel>
+          <div className="space-y-6">
+            <Field>
+              <FieldLabel>Email Address</FieldLabel>
+              <div className="relative">
                 <Input
                   type="email"
                   required
-                  autoComplete="email"
                   placeholder="you@example.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                  className={isRegistered ? "border-green-500 pr-10" : ""}
                 />
-              </Field>
+                {isRegistered && (
+                  <CheckCircle2 className="absolute right-3 top-2.5 h-5 w-5 text-green-500" />
+                )}
+              </div>
+            </Field>
+
+            <div className="space-y-3">
+              <Button 
+                onClick={handlelogin} 
+                className="w-full" 
+                variant={isRegistered ? "default" : "outline"}
+                disabled={!isRegistered || isLoading || isVerifying}
+              >
+                {isVerifying ? 'Verifying...' : 'Log in via Google'}
+              </Button>
+              
+              {!isRegistered && formData.email.length > 5 && !isVerifying && (
+                <p className="text-center text-xs text-muted-foreground">
+                  New to AsliZameen? <Link href="/register" className="text-primary font-bold underline">Create an account</Link>
+                </p>
+              )}
+            </div>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase"><span className="bg-background px-2 text-muted-foreground">Or use phone</span></div>
+            </div>
+
+            <form onSubmit={handleSubmit}>
               <Field>
-                <div className="flex items-center justify-between">
-                  <FieldLabel>Mobile No.</FieldLabel>
-                  {/* <Link href="#" className="text-xs text-primary hover:underline">
-                    Forgot password?
-                  </Link> */}
-                </div>
+                <FieldLabel>Mobile No.</FieldLabel>
                 <Input
-                  type="Number"
+                  type="tel" // 'tel' is better for mobile keyboards than 'Number'
                   required
-                  autoComplete="current-password"
                   placeholder="Enter your Mobile No."
                   value={formData.phone}
                   onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  disabled={!isRegistered}
                 />
               </Field>
-            </FieldGroup>
 
-            <Button type="submit" className="mt-6 w-full" disabled={isLoading}>
-              {isLoading ? 'Signing in...' : 'Sign In'}
-            </Button>
-          </form>
-
-          {/* Demo Credentials */}
-          <div className="mt-6 rounded-lg bg-muted p-4">
-            <p className="text-sm font-medium">Demo Credentials:</p>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Email: sarah@realestate.com<br />
-              Password: password123
-            </p>
+              <Button type="submit" className="mt-6 w-full" disabled={isLoading || !isRegistered}>
+                {isLoading ? 'Signing in...' : 'Sign In'}
+              </Button>
+            </form>
           </div>
         </CardContent>
 
         <CardFooter className="justify-center">
           <p className="text-sm text-muted-foreground">
             Don&apos;t have an account?{' '}
-            <Link href="/register" className="text-primary hover:underline">
+            <Link href="/register" className="text-primary hover:underline font-medium">
               Sign up
             </Link>
           </p>
