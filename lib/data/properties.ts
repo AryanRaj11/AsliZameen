@@ -302,7 +302,6 @@ export async function googleSignIn(): Promise<Boolean> {
     throw error;
   }
 }
-
 export async function registerUser(name: String,
   email: String,
   phone: Number,

@@ -3,6 +3,7 @@ import { User } from '../types'
 
 
 export async function getUserById(id: string): Promise<User | undefined> {
+  if(!supabase){return}
   const { data, error } = await supabase
     .from('users') // Replace with your actual table name
     .select('*')
@@ -13,7 +14,10 @@ export async function getUserById(id: string): Promise<User | undefined> {
   return data as User
 }
 
-export async function getUserByEmail(email: string): Promise<User | undefined> {
+export async function getUserByEmail(email: string): Promise<Boolean> {
+  if(!supabase){
+    return false;
+  }
   const { data, error } = await supabase
     .from('users')
     .select('*')
@@ -21,6 +25,8 @@ export async function getUserByEmail(email: string): Promise<User | undefined> {
     .ilike('email', email)
     .single()
 
-  if (error || !data) return undefined
-  return data as User
+  if (error || !data) return false;
+  if(data)return true;
+
+  return false;
 }

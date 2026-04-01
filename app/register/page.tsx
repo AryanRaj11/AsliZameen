@@ -129,7 +129,7 @@ export default function RegisterPage() {
                   autoComplete="phone-number"
                   placeholder="+91"
                   value={formData.phone}
-                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                  onChange={(e) => setFormData({ ...formData, phone: Number(e.target.value) })}
                 />
               </Field>
               <Field>
