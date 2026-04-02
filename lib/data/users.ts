@@ -30,3 +30,20 @@ export async function getUserByEmail(email: string): Promise<Boolean> {
 
   return false;
 }
+
+export async function getUserCredits(email: string): Promise<Number> {
+  if(!supabase){
+    return 0;
+  }
+  const { data, error } = await supabase
+    .from('users')
+    .select('credits')
+    // ilike handles case-insensitive matching in Postgres
+    .ilike('email', email)
+    .single()
+
+  if (error || !data) return 0;
+  if(data)return data.credits;
+
+  return 2;
+}
