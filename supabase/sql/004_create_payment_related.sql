@@ -1,9 +1,9 @@
-ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 2;
+-- ALTER TABLE users 
+-- ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 2;
 
 -- Optional: Ensure credits never go below zero
-ALTER TABLE users 
-ADD CONSTRAINT check_positive_credits CHECK (credits >= 0);
+-- ALTER TABLE users 
+-- ADD CONSTRAINT check_positive_credits CHECK (credits >= 0);
 
 --This table acts as the "Permission Ledger." It records which user has paid for which property.
 CREATE TABLE IF NOT EXISTS property_unlocks (
