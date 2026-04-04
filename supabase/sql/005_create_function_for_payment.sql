@@ -48,7 +48,7 @@ $$ LANGUAGE plpgsql;
 create or replace function increment_credits(user_id uuid, amount int)
 returns void as $$
 begin
-  update profiles -- or your specific table name
+  update users -- or your specific table name
   set credits = credits + amount
   where id = user_id;
 end;
