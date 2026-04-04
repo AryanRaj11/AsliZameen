@@ -53,6 +53,12 @@ export default function RegisterPage() {
     e.preventDefault()
     setError('')
 
+
+    if (formData.phone.toString().length !== 10) {
+      alert("Please enter a valid 10-digit mobile number.");
+      return;
+    }
+
     setIsLoading(true)
 
     const signin = await googleSignIn();
@@ -124,7 +130,7 @@ export default function RegisterPage() {
               <Field>
                 <FieldLabel>Mobile Number</FieldLabel>
                 <Input
-                  type="number"
+                  type="numeric"
                   required
                   autoComplete="phone-number"
                   placeholder="+91"
