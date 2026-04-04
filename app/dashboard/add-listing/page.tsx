@@ -246,16 +246,16 @@ export default function AddListingPage() {
         landType: formData.landType as LandType,
         zip_code: formData.zipCode,
         images: imageUrls,
-        land_papers : landPapersUrls,
+        land_papers: landPapersUrls,
         seller_id: user?.id || '',
         createdAt: new Date().toISOString().split('T')[0],
         status: 'active',
         location: `POINT(${formData.lng} ${formData.lat})` // PostGIS format
       };
-      
-      if(imageUrls && landPapersUrls){
-      await saveProperty(newProperty);
-      setIsSubmitted(true);
+
+      if (imageUrls && landPapersUrls) {
+        await saveProperty(newProperty);
+        setIsSubmitted(true);
       }
     } catch (err) {
       alert("Error saving property.Please try after sometime.");
@@ -426,7 +426,8 @@ export default function AddListingPage() {
                     <Field><FieldLabel>City</FieldLabel><Input required value={formData.city} onChange={e => setFormData({ ...formData, city: e.target.value })} /></Field>
                     <Field><FieldLabel>State</FieldLabel><Input required value={formData.state} onChange={e => setFormData({ ...formData, state: e.target.value })} /></Field>
                   </div>
-                  <Field><FieldLabel>Zip Code</FieldLabel><Input required value={formData.zipCode} onChange={e => setFormData({ ...formData, zipCode: e.target.value })} /></Field>
+                  <Field><FieldLabel>Zip Code</FieldLabel><Input type='numeric' required value={formData.zipCode} onChange={e => setFormData({ ...formData, zipCode: e.target.value })} 
+                  onBlur={e => handleZipCode(e.target.value)} /></Field>
                 </CardContent>
               </Card>
 
@@ -468,7 +469,7 @@ export default function AddListingPage() {
               </CardHeader>
               <CardContent>
                 <div className="flex flex-wrap gap-2">
-                {landPapersPreviews.map((p, i) => <img key={i} src={p} className="w-20 h-20 object-cover rounded" />)}
+                  {landPapersPreviews.map((p, i) => <img key={i} src={p} className="w-20 h-20 object-cover rounded" />)}
                   <Button type="button" variant="outline" onClick={() => (landPapersInputRef.current as any).click()}>
                     <Upload className="mr-2 h-4 w-4" /> Add Files
                   </Button>
@@ -489,4 +490,13 @@ export default function AddListingPage() {
       </div>
     </APIProvider>
   )
+}
+
+
+export const handleZipCode = (zipcode:string) => {
+  
+     if(zipcode.length!==6){
+      alert('please input the correct zipcode')
+     }
+    
 }

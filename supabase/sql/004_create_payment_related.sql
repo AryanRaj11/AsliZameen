@@ -1,9 +1,9 @@
-ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 2;
+-- ALTER TABLE users 
+-- ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 2;
 
 -- Optional: Ensure credits never go below zero
-ALTER TABLE users 
-ADD CONSTRAINT check_positive_credits CHECK (credits >= 0);
+-- ALTER TABLE users 
+-- ADD CONSTRAINT check_positive_credits CHECK (credits >= 0);
 
 --This table acts as the "Permission Ledger." It records which user has paid for which property.
 CREATE TABLE IF NOT EXISTS property_unlocks (
@@ -17,7 +17,7 @@ CREATE TABLE IF NOT EXISTS property_unlocks (
 );
 
 -- Indexing for lightning-fast lookups when a user opens a property page
-CREATE INDEX idx_unlocks_user_property ON property_unlocks(user_id, property_id);
+CREATE INDEX IF NOT EXISTS idx_unlocks_user_property ON property_unlocks(user_id, property_id);
 
 --This table records every "In" and "Out" of credits. It’s your audit trail for asliZameen.
 CREATE TABLE IF NOT EXISTS credit_transactions (
@@ -31,4 +31,4 @@ CREATE TABLE IF NOT EXISTS credit_transactions (
 );
 
 -- Index for fast history lookup
-CREATE INDEX idx_transactions_user ON credit_transactions(user_id);
+CREATE INDEX IF NOT EXISTS idx_transactions_user ON credit_transactions(user_id);
