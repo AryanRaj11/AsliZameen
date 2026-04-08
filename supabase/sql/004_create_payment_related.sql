@@ -1,7 +1,7 @@
-ALTER TABLE users 
-ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 2;
+-- ALTER TABLE users 
+-- ADD COLUMN IF NOT EXISTS credits INTEGER DEFAULT 2;
 
-Optional: Ensure credits never go below zero
+--Optional: Ensure credits never go below zero
 ALTER TABLE users 
 ADD CONSTRAINT check_positive_credits CHECK (credits >= 0);
 
