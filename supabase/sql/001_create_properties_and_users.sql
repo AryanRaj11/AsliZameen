@@ -1,5 +1,6 @@
 -- 1. Enable the extension for UUID generation (required for gen_random_uuid())
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+CREATE EXTENSION IF NOT EXISTS postgis;
 
 -- 2. Create users table
 CREATE TABLE IF NOT EXISTS public.users (
@@ -46,9 +47,6 @@ CREATE TABLE IF NOT EXISTS public.properties (
 -- 4. Create indexes for performance (Recommended)
 CREATE INDEX IF NOT EXISTS idx_properties_seller_id ON public.properties(seller_id);
 CREATE INDEX IF NOT EXISTS idx_properties_status ON public.properties(status);
-
-
-CREATE EXTENSION IF NOT EXISTS postgis;
 
 
 -- Create a spatial index (Crucial for speed!)
