@@ -23,7 +23,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
   const router = useRouter()
   const pathname = usePathname()
 
-  const canSell = user?.role === 'seller' || user?.role === 'both'
+  const canSell = user?.role === 'seller' || user?.role === 'admin'
 
   useEffect(() => {
     if (!isLoading && !user) {

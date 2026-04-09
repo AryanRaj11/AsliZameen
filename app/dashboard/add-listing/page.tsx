@@ -266,7 +266,7 @@ export default function AddListingPage() {
   };
 
   // Auth Check
-  const canSell = user?.role === 'seller' || user?.role === 'both';
+  const canSell = user?.role === 'seller' || user?.role === 'admin';
   if (!user || !canSell) return <div className="p-10 text-center">Seller Account Required</div>;
 
   if (isSubmitted) {
